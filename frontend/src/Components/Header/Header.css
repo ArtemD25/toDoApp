@@ -1,0 +1,26 @@
+.header__wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 30px;
+  
+  background: rgb(249,72,109);
+  background: -moz-linear-gradient(120deg, rgba(249,72,109,1) 0%, rgba(238,198,45,1) 100%);
+  background: -webkit-linear-gradient(120deg, rgba(249,72,109,1) 0%, rgba(238,198,45,1) 100%);
+  background: linear-gradient(120deg, rgba(249,72,109,1) 0%, rgba(238,198,45,1) 100%);
+}
+
+.header__header {
+  margin: auto 0 0 0;
+  
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  color: #ffffff;
+}
+
+.header__date {
+  margin: 0;
+  
+  color: #ffffff;
+}
