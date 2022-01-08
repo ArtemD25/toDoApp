@@ -4,7 +4,7 @@ import './Header.css';
 export default function Header() {
   function getCurrentDate(): string {
     const date = new Date();
-    return `${date.toLocaleString('en-US', {weekday: 'long'})}, ${date.toLocaleString('en-US', {month: 'long'})} ${date.getDate()}, ${date.getFullYear()}`
+    return `${date.toLocaleString('en-US', {weekday: 'long'})}, ${date.toLocaleString('en-US', {month: 'long'})} ${date.getDate()}`
   }
 
   return (

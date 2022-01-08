@@ -1,0 +1,11 @@
+.Navbar__list {
+  margin: 0;
+  padding: 30px 0;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  
+  list-style-type: none;
+}

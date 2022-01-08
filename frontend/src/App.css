@@ -1,4 +1,5 @@
 .application {
+  position: relative;
   display: grid;
   grid-template-columns: 2fr 7fr;
   grid-template-rows: minmax(100px, 200px) auto;
@@ -18,4 +19,13 @@
 
 .main {
   grid-area: main;
+}
+
+.addTask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.4);
 }
