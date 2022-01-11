@@ -7,15 +7,12 @@ interface Props {
     text: string;
     completed: boolean;
     important: boolean;
-  }
+  },
+  updateCompletedStatus: Function;
+  updateImportantStatus: Function;
 }
 
-interface State {
-  completed: boolean;
-  important: boolean;
-}
-
-export default class ItemTask extends React.Component<Props, State> {
+export default class ItemTask extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -24,43 +21,40 @@ export default class ItemTask extends React.Component<Props, State> {
     }
   }
 
-  setCompletedStatus = (): void => {
+  changeCompletedStatus = (): void => {
     fetch(`/tasks/${this.props.task.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        completed: !this.state.completed
+        completed: !this.props.task.completed
       })
     })
     .then(response => response.json())
     .then(object => {
-      console.log('Response to completed status update request');
-      console.log(object);
-    });
-    this.setState({
-      completed: !this.state.completed
+      console.log('Received object')
+      console.log(object)
+      this.props.updateCompletedStatus(object.id, object.completed)
     })
+      .catch(err => console.log('Error occurred'));
   }
 
-  setImportanceStatus = (): void => {
+  changeImportantStatus = (): void => {
     fetch(`/tasks/${this.props.task.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        important: !this.state.important
+        important: !this.props.task.important
       })
     })
       .then(response => response.json())
       .then(object => {
-        console.log('Response to importance status update request');
-        console.log(object);
-        this.setState({
-          important: !this.state.important
-        })
+        console.log('Received object')
+        console.log(object)
+        this.props.updateImportantStatus(object.id, object.important)
       })
       .catch(err => console.log('Error occurred'));
   }
@@ -80,13 +74,13 @@ export default class ItemTask extends React.Component<Props, State> {
     return (
       <li className="ItemTask__container">
         <button
-          className={`ItemTask__circleSign ${this.state.completed ? 'ItemTask__circleSign--completed' : null}`}
-          onClick={this.setCompletedStatus}
+          className={`ItemTask__circleSign ${this.props.task.completed ? 'ItemTask__circleSign--completed' : null}`}
+          onClick={this.changeCompletedStatus}
           type="button">
           <span className="visually-hidden">A button allowing to mark / unmark a task to be done</span>
         </button>
         <span
-          className={`ItemTask__taskText ${this.state.completed ? 'ItemTask__taskText--completed' : null}`}>
+          className={`ItemTask__taskText ${this.props.task.completed ? 'ItemTask__taskText--completed' : null}`}>
           {this.props.task.text}</span>
         <ul className="ItemTask__actions">
           <li className="ItemTask__action">
@@ -100,8 +94,8 @@ export default class ItemTask extends React.Component<Props, State> {
           </li>
           <li className="ItemTask__action">
             <button
-              className={`ItemTask__button ItemTask__button--star ${this.state.important ? 'ItemTask__button--starOn' : null}`}
-              onClick={this.setImportanceStatus}>
+              className={`ItemTask__button ItemTask__button--star ${this.props.task.important ? 'ItemTask__button--starOn' : null}`}
+              onClick={this.changeImportantStatus}>
               <svg viewBox="0 0 576 512">
                 <path fill="#7c7c7c"
                   d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path>
