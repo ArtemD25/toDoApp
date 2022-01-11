@@ -1,43 +1,29 @@
 import React, {MouseEventHandler} from 'react';
-import ItemNew from "./ItemNew/ItemNew";
-import ItemTask from './ItemTask/ItemTask';
+import AllTasks from './AllTasks/AllTasks';
+import CompletedTasks from './CompletedTasks/CompletedTasks';
+import ImportantTasks from './ImportantTasks/ImportantTasks';
 import './Main.css';
+import {Routes, Route} from "react-router-dom";
 
 interface Props {
   openModal: MouseEventHandler;
 }
 
-const json = [
-  {
-    id: 1,
-    text: 'Buy some fish',
-    completed: false,
-    important: false
-  },
-  {
-    id: 2,
-    text: 'Get birthday presents for Carl',
-    completed: false,
-    important: true
-  },
-  {
-    id: 3,
-    text: 'Feed the cat',
-    completed: false,
-    important: false
-  },
-]
-
 export default class Main extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
   render() {
     return (
       <ul className="taskList">
-        <ItemNew openModal={this.props.openModal}/>
-        {json.map(item => <ItemTask key={item.id} task={item}/>)}
+        <Routes>
+          <Route
+            path="/allTasks"
+            element={<AllTasks openModal={this.props.openModal}/>}/>
+          <Route
+            path="/importantTasks"
+            element={<ImportantTasks/>}/>
+          <Route
+            path="/completedTasks"
+            element={<CompletedTasks/>}/>
+        </Routes>
       </ul>
     );
   }

@@ -9,3 +9,38 @@
   
   list-style-type: none;
 }
+
+.NavLink__container {
+  display: flex;
+  padding: 10px 20px;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.NavLink__container:hover {
+  background-color: #f6f6f6;
+}
+
+.NavLink__container:hover path {
+  fill: rgb(239, 210, 99);
+}
+
+.NavLink__icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 0 20px 0 0;
+}
+
+.NavLink__icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.NavLink__text {
+  color: #000000;
+}
