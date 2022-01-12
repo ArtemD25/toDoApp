@@ -33,33 +33,20 @@ export default class ImportantTasks extends React.Component<Props, State> {
       });
   }
 
-  updateCompletedStatus = (id: number, updatedStatus: boolean) => {
-    console.log('Completed state before');
+  changeTaskProperty = (object: Task) => {
+    console.log('Common state before');
     console.log(this.state)
+    console.log('Object received:')
+    console.log(object);
     const updatedTasks = JSON.parse(JSON.stringify(this.state.tasks))
     for (let i = 0; i < updatedTasks.length; i++) {
-      if (+updatedTasks[i].id === id) {
-        updatedTasks[i].completed = updatedStatus;
+      if (+updatedTasks[i].id === +object.id) {
+        updatedTasks[i] = object;
         break;
       }
     }
     this.setState({tasks: updatedTasks});
-    console.log('Completed state after');
-    console.log(this.state)
-  }
-
-  updateImportantStatus = (id: number, updatedStatus: boolean) => {
-    console.log('Completed state before');
-    console.log(this.state)
-    const updatedTasks = JSON.parse(JSON.stringify(this.state.tasks))
-    for (let i = 0; i < updatedTasks.length; i++) {
-      if (+updatedTasks[i].id === id) {
-        updatedTasks[i].important = updatedStatus;
-        break;
-      }
-    }
-    this.setState({tasks: updatedTasks});
-    console.log('Completed state after');
+    console.log('Common state after');
     console.log(this.state)
   }
 
@@ -69,8 +56,7 @@ export default class ImportantTasks extends React.Component<Props, State> {
       <div>{this.state.tasks.length > 0 ? this.state.tasks.map(item => <ItemTask
         key={item.id}
         task={item}
-        updateCompletedStatus={this.updateCompletedStatus}
-        updateImportantStatus={this.updateImportantStatus}/>) : <NoItems/>}
+        changeTaskProperty={this.changeTaskProperty}/>) : <NoItems/>}
       </div>
     )
   }

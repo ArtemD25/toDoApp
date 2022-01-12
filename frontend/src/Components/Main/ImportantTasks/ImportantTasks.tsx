@@ -33,36 +33,24 @@ export default class ImportantTasks extends React.Component<Props, State> {
       });
   }
 
-  updateCompletedStatus = (id: number, updatedStatus: boolean) => {
-    console.log('Important state before');
+  changeTaskProperty = (updatedTask: Task) => {
+    console.log('Common state before');
     console.log(this.state)
+    console.log('Object received in changeTaskProperty func:')
+    console.log(updatedTask);
     const updatedTasks = JSON.parse(JSON.stringify(this.state.tasks))
     for (let i = 0; i < updatedTasks.length; i++) {
-      if (+updatedTasks[i].id === id) {
-        updatedTasks[i].completed = updatedStatus;
+      if (+updatedTasks[i].id === +updatedTask.id) {
+        console.log(`Updated task id = ${i}`)
+        updatedTasks[i] = updatedTask;
+        console.log('Updated task')
+        console.log(updatedTasks[i])
         break;
       }
     }
     this.setState({tasks: updatedTasks});
-    console.log('Important state after');
+    console.log('Common state after');
     console.log(this.state)
-  }
-
-  updateImportantStatus = (id: number, updatedStatus: boolean) => {
-    console.log('Important state before');
-    console.log(this.state.tasks)
-    console.log(`New status to be set: ${updatedStatus}`)
-    const updatedTasks = JSON.parse(JSON.stringify(this.state.tasks))
-    for (let i = 0; i < updatedTasks.length; i++) {
-      if (+updatedTasks[i].id === id) {
-        updatedTasks[i].important = updatedStatus;
-        break;
-      }
-    }
-    this.setState({tasks: updatedTasks});
-    console.log('Important state after');
-    console.log(this.state.tasks)
-    console.log(`New status: ${this.state.tasks[0].important}`)
   }
 
   render() {
@@ -71,8 +59,7 @@ export default class ImportantTasks extends React.Component<Props, State> {
       <div>{this.state.tasks.length > 0 ? this.state.tasks.map(item => <ItemTask
         key={item.id}
         task={item}
-        updateCompletedStatus={this.updateCompletedStatus}
-        updateImportantStatus={this.updateImportantStatus}/>) : <NoItems/>}
+        changeTaskProperty={this.changeTaskProperty}/>) : <NoItems/>}
       </div>
     )
   }

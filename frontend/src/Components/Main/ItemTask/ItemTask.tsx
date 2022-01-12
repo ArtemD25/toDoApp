@@ -8,8 +8,7 @@ interface Props {
     completed: boolean;
     important: boolean;
   },
-  updateCompletedStatus: Function;
-  updateImportantStatus: Function;
+  changeTaskProperty: Function;
 }
 
 export default class ItemTask extends React.Component<Props> {
@@ -35,7 +34,7 @@ export default class ItemTask extends React.Component<Props> {
     .then(object => {
       console.log('Received object')
       console.log(object)
-      this.props.updateCompletedStatus(object.id, object.completed)
+      this.props.changeTaskProperty(object)
     })
       .catch(err => console.log('Error occurred'));
   }
@@ -54,7 +53,7 @@ export default class ItemTask extends React.Component<Props> {
       .then(object => {
         console.log('Received object')
         console.log(object)
-        this.props.updateImportantStatus(object.id, object.important)
+        this.props.changeTaskProperty(object)
       })
       .catch(err => console.log('Error occurred'));
   }
