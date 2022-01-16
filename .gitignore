@@ -24,5 +24,6 @@ yarn-error.log*
 
 /.idea
 /img
+*.jpg
+*.png
 *.txt
-screenshot.png
