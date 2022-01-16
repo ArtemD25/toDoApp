@@ -13,9 +13,11 @@
     "@types/react-dom": "^17.0.11",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
     "react-router": "^6.2.1",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "redux": "^4.1.2",
     "typescript": "^4.5.4",
     "web-vitals": "^2.1.2"
   },
@@ -23,7 +25,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "node ../backend/src/index.js",
+    "tsc-server": "tsc ../backend/src/index.ts",
+    "dev": "npm run build && npm run server",
+    "dev-tsc": "npm run tsc-server && npm run build && npm run server"
   },
   "eslintConfig": {
     "extends": [

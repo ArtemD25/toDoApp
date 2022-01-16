@@ -1,55 +1,57 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Navbar from "./Components/Navbar/Navbar";
 import Header from "./Components/Header/Header";
 import Main from "./Components/Main/Main";
-import AddTask from "./Components/AddTask/AddTask";
+import ModalWindow from "./Components/ModalWindow/ModalWindow";
 import './App.css';
+import {useDispatch, useSelector} from "react-redux";
 
 interface Props {
 
 }
 
-interface State {
-  showModal: boolean;
+interface rootState {
+  isModalWindowShown: boolean;
 }
 
-export default class App extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      showModal: false,
-    }
-  }
+export default function App(props: Props) {
+  const isModalWindowShown = useSelector((state: rootState) => state.isModalWindowShown);
 
-  openModal = (): void => {
-    if (!this.state.showModal) {
-      this.setState({showModal: true})
-    }
-  }
+  // const [isModalShown, toggleModal] = useState(false);
+  // const [modalText, setModalText] = useState('');
+  // const [modalTextId, setModalTextId] = useState(null);
 
-  closeModal = (): void => {
-    if (this.state.showModal) {
-      this.setState({showModal: false})
-    }
-  }
+  // const saveNewTaskText = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //   console.log('saveNewTaskText')
+  //   this.setState({modalText: evt.currentTarget.value})
+  // }
 
-  render() {
-    return (
-      <div className="application">
-        <header className="header">
-          <Header/>
-        </header>
-        <nav className="navbar">
-          <Navbar/>
-        </nav>
-        <main className="main">
-          <Main openModal={this.openModal}/>
-        </main>
-        {this.state.showModal ?
-          <section className="addTask">
-            <AddTask closeModal={this.closeModal}/>
-          </section> : null}
+  // const openModal = (textToRenderInModal: string, modalTextId: number): void => {
+  //   console.log('openModal')
+  //   if (!this.state.showModal) {
+  //     this.setState({showModal: true})
+  //     this.setState({modalText: textToRenderInModal});
+  //     this.setState({modalTextId: modalTextId});
+  //   }
+  // }
+  //
+  // const provideUpdatedTaskTextAndID = (): string[] => {
+  //   console.log('provideUpdatedTaskTextAndID')
+  //   return [this.state.modalText, String(this.state.modalTextId)];
+  // }
+
+  return (
+    <div className="application">
+      <header className="header">
+        <Header/>
+      </header>
+      <nav className="navbar">
+        <Navbar/>
+      </nav>
+      <main className="main">
+        <Main/>
+      </main>
+      {isModalWindowShown && <ModalWindow/>}
       </div>
-    );
-  }
+  )
 }

@@ -1,31 +1,32 @@
-import React, {MouseEventHandler} from 'react';
-import AllTasks from './AllTasks/AllTasks';
-import CompletedTasks from './CompletedTasks/CompletedTasks';
-import ImportantTasks from './ImportantTasks/ImportantTasks';
+import React from 'react';
+import AllTasks from './AllTasksToRender/AllTasks';
+import ImportantTasks from './AllTasksToRender/ImportantTasks';
+import CompletedTasks from './AllTasksToRender/CompletedTasks';
 import './Main.css';
 import {Routes, Route} from "react-router-dom";
 
-interface Props {
-  openModal: MouseEventHandler;
-}
+export default function Main() {
 
-export default class Main extends React.Component<Props> {
-  render() {
-    return (
-      <ul className="taskList">
-        <Routes>
-          <Route
-            path="/allTasks"
-            element={<AllTasks openModal={this.props.openModal}/>}/>
-          <Route
-            path="/importantTasks"
-            element={<ImportantTasks/>}/>
-          <Route
-            path="/completedTasks"
-            element={<CompletedTasks/>}/>
-        </Routes>
-      </ul>
-    );
-  }
+  return (
+    <ul className="taskList">
+      <Routes>
+        <Route
+          path="/allTasks"
+          element={<AllTasks
+            isAddNewTaskButtonVisible={true}
+            url="getAllTasks"/>}/>
+        <Route
+          path="/importantTasks"
+          element={<ImportantTasks
+            isAddNewTaskButtonVisible={false}
+            url="getImportantTasks"/>}/>
+        <Route
+          path="/completedTasks"
+          element={<CompletedTasks
+            isAddNewTaskButtonVisible={false}
+            url="getCompletedTasks"/>}/>
+      </Routes>
+    </ul>
+  )
 }
 

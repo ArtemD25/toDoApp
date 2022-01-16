@@ -2,7 +2,16 @@ const path = require("path");
 const express = require('express');
 const app = express();
 
-const tasks = [
+interface Task {
+  [key: string]: number | string | boolean;
+
+  id: number;
+  text: string;
+  completed: boolean;
+  important: boolean;
+}
+
+const tasks: Task[] = [
   {
     id: 1,
     text: 'Buy some fish',
@@ -56,24 +65,29 @@ app.get('/', (req, res, next) => {
   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
 
-app.get('/allTasks', (req, res, next) => {
+app.get('/importantTasks', (req, res, next) => {
+  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+});
+
+app.get('/getAllTasks', (req, res, next) => {
   console.log('Sending all tasks...');
   res.json(tasks);
 });
 
-app.get('/completedTasks', (req, res, next) => {
-  res.json(getfilteredTasks(true, false));
+app.get('/getCompletedTasks', (req, res, next) => {
+  res.json(getFilteredTasks(true, false));
 });
 
-app.get('/importantTasks', (req, res, next) => {
-  res.json(getfilteredTasks(false, true));
+app.get('/getImportantTasks', (req, res, next) => {
+  res.send(JSON.stringify(getFilteredTasks(false, true)));
 });
 
-app.put('/tasks/:id', (req, res, next) => {
+
+app.patch('/tasks/:id', (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!');
   } else if (!tasks.some(item => +item.id === +req.params.id)) {
-    return res.status(400).send('You can`t update a non existing task!');
+    return res.status(400).send('You can`t update a non-existing task!');
   }
   const id = req.params.id;
   const propertyToChange = Object.keys(req.body)[0];
@@ -102,6 +116,20 @@ app.put('/tasks/:id', (req, res, next) => {
   res.json(tasks[index]);
 })
 
+app.put('/tasks/addNewTask', (req, res, next) => {
+  if (!Object.prototype.toString.call(req.body).includes('Object')) {
+    return res.status(400).send('The data you provided is not correct!');
+  }
+  const newTask = {
+    id: idGenerator.next().value,
+    text: req.body.text,
+    completed: false,
+    important: false
+  }
+  tasks.push(<Task>newTask);
+  res.json(newTask);
+})
+
 app.delete('/tasks/:id', (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!');
@@ -126,10 +154,19 @@ app.listen(3001, () => {
   console.log(`Server started at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
 })
 
-function getfilteredTasks(completed: boolean, important: boolean) {
+function getFilteredTasks(completed: boolean, important: boolean) {
   if (completed) {
     return tasks.filter(task => task.completed);
   } else if (important) {
     return tasks.filter(task => task.important);
   }
 }
+
+function* getId() {
+  let id = 50;
+  while(true) {
+    id += 1;
+    yield id;
+  }
+}
+const idGenerator = getId();
