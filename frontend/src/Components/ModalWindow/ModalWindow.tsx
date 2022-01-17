@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './ModalWindow.css';
 import {useDispatch, useSelector} from "react-redux";
 
@@ -19,6 +19,7 @@ interface Task {
 }
 
 export default function ModalWindow() {
+  const [modalWindowWarningText, setModalWindowWarningText] = useState('');
   const dispatch = useDispatch();
   const modalWindowTaskText = useSelector((state: State) => state.modalWindowTaskText);
   const modalWindowTaskId = useSelector((state: State) => state.modalWindowTaskId);
@@ -31,22 +32,32 @@ export default function ModalWindow() {
     dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: evt.target.value})
   }
 
+  useEffect(() => {
+    if (isNewTaskTextValid()) {
+      setModalWindowWarningText('Your text is fine 😎');
+    } else {
+      setModalWindowWarningText(`Type in 1-64 characters. Currently you typed in ${modalWindowTaskText.length}`);
+    }
+  }, [modalWindowTaskText])
+
+  function saveTaskTextAndValidate(evt: React.ChangeEvent<HTMLTextAreaElement>) {
+    saveNewTaskTextToRedux(evt);
+
+  }
+
   function isNewTaskTextValid(): boolean {
     return modalWindowTaskText.length >= MIN_TEXT_LENGTH && modalWindowTaskText.length <= MAX_TEXT_LENGTH;
   }
 
   function closeModalWindow() {
-    if (isNewTaskTextValid()) {
-      console.log("text is valid");
-      dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: ''});
-      dispatch({type: 'setModalWindowTaskId', modalWindowTaskText: null});
-      dispatch({type: 'setModalWindowAction', modalWindowAction: null})
-      dispatch({type: 'closeModalWindow'});
-    }
+    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: ''});
+    dispatch({type: 'setModalWindowTaskId', modalWindowTaskText: null});
+    dispatch({type: 'setModalWindowAction', modalWindowAction: null})
+    dispatch({type: 'closeModalWindow'});
   }
 
-  function putEditedTaskToServer(id: string, taskText: string) {
-    return fetch(`/tasks/${id}`, {
+  function saveEditedTaskOnServer(id: string, taskText: string) {
+    fetch(`/tasks/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -57,15 +68,13 @@ export default function ModalWindow() {
     })
       .then(response => response.json())
       .then(object => {
-        // console.log(`Received object from server: ${object}`)
-        // console.log(object)
         updateTaskPropertyInRedux(object);
       })
       .catch(err => console.log(err));
   }
 
-  function putNewTaskToServer(taskText: string) {
-    return fetch(`/tasks/addNewTask`, {
+  function saveNewTaskOnServer(taskText: string) {
+    fetch(`/tasks/addNewTask`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -76,8 +85,6 @@ export default function ModalWindow() {
     })
       .then(response => response.json())
       .then(object => {
-        // console.log(`Received object from server: ${object}`)
-        // console.log(object)
         updateTaskPropertyInRedux(object);
       })
       .catch(err => console.log(err));
@@ -96,39 +103,61 @@ export default function ModalWindow() {
     } else if (modalWindowAction === 'createTask') {
       dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: [...filteredTasksToShow, updatedTask]});
     }
+  }
 
-    closeModalWindow();
+  function setModalWindowButtonText() {
+    if (modalWindowAction === 'editTask') {
+      return 'Save edited task';
+    } else if (modalWindowAction === 'createTask') {
+      return 'Save new task';
+    }
+  }
+
+  function setModalWindowCaptionText() {
+    if (modalWindowAction === 'editTask') {
+      return 'Edit the task using 1-64 characters';
+    } else if (modalWindowAction === 'createTask') {
+      return 'Describe the task you want to add using 1-64 characters';
+    }
+  }
+  
+  function chooseButtonActionAndRun() {
+    if (isNewTaskTextValid()) {
+      if (modalWindowAction === 'editTask') {
+        saveEditedTaskOnServer(modalWindowTaskId, modalWindowTaskText);
+      } else if (modalWindowAction === 'createTask') {
+        saveNewTaskOnServer(modalWindowTaskText);
+      }
+      closeModalWindow();
+    }
   }
 
   return (
     <div className="ModalWindow__background">
-      <div className="ModalWindow__body">
+      <form className="ModalWindow__body">
         <button
           className="ModalWindow__closeModal"
-          onClick={() => dispatch({type: 'closeModalWindow'})}>
+          onClick={closeModalWindow}>
           <span className="visually-hidden">The close button for the modal window</span>
         </button>
-        <span className="ModalWindow__description">Describe the task you want to add using 1-64 characters</span>
+        <span className="ModalWindow__description">{setModalWindowCaptionText()}</span>
         <textarea
-          onChange={saveNewTaskTextToRedux}
+          onChange={saveTaskTextAndValidate}
           className="ModalWindow__taskText"
           rows={3}
-          placeholder="Type in a new task" defaultValue={modalWindowTaskText}></textarea>
-        <span className="ModalWindow__warning">Warning</span>
+          placeholder="Type in a new task"
+          defaultValue={modalWindowTaskText}/>
+        <span className={isNewTaskTextValid() ? "ModalWindow__warning" : "ModalWindow__warning ModalWindow__warning--error"}>
+          {modalWindowWarningText}
+        </span>
         <button
           type="button"
           className="ModalWindow__submit"
-          onClick={() => {
-            if (modalWindowAction === 'editTask') {
-              putEditedTaskToServer(modalWindowTaskId, modalWindowTaskText);
-            } else if (modalWindowAction === 'createTask') {
-              putNewTaskToServer(modalWindowTaskText);
-            }
-            closeModalWindow()
-          }}>
-          {modalWindowAction === 'editTask' ? 'Save edited task' : 'Save new task'}
+          onClick={chooseButtonActionAndRun}
+          disabled={!isNewTaskTextValid()}>
+          {setModalWindowButtonText()}
         </button>
-      </div>
+      </form>
     </div>
   )
 }

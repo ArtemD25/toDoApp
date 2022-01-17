@@ -1,7 +1,7 @@
 import React from 'react';
-import AllTasks from './AllTasksToRender/AllTasks';
-import ImportantTasks from './AllTasksToRender/ImportantTasks';
-import CompletedTasks from './AllTasksToRender/CompletedTasks';
+import AllTasks from './TasksToRender/AllTasks';
+import ImportantTasks from './TasksToRender/ImportantTasks';
+import CompletedTasks from './TasksToRender/CompletedTasks';
 import './Main.css';
 import {Routes, Route} from "react-router-dom";
 
