@@ -74,7 +74,7 @@ export default function ModalWindow() {
   }
 
   function saveNewTaskOnServer(taskText: string) {
-    fetch(`/tasks/addNewTask`, {
+    fetch(`/tasks/newTask`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

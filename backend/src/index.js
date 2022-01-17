@@ -77,11 +77,16 @@ app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 app.get('/', function (req, res, next) {
     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
+app.get('/allTasks', function (req, res, next) {
+    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+});
+app.get('/completedTasks', function (req, res, next) {
+    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+});
 app.get('/importantTasks', function (req, res, next) {
     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
 app.get('/getAllTasks', function (req, res, next) {
-    console.log('Sending all tasks...');
     res.json(tasks);
 });
 app.get('/getCompletedTasks', function (req, res, next) {
@@ -105,13 +110,7 @@ app.patch('/tasks/:id', function (req, res, next) {
     var index;
     for (var i = 0; i < tasks.length; i++) {
         if (+tasks[i].id === +id) {
-            console.log("---");
-            console.log(tasks[i]);
-            console.log("Old value: ".concat(tasks[i][propertyToChange]));
             tasks[i][propertyToChange] = newValueForProperty;
-            console.log("New value: ".concat(tasks[i][propertyToChange]));
-            console.log(tasks[i]);
-            console.log("---");
             index = i;
             break;
         }
@@ -119,7 +118,7 @@ app.patch('/tasks/:id', function (req, res, next) {
     console.log("Server changed ".concat(propertyToChange, " property to ").concat(tasks[index][propertyToChange]));
     res.json(tasks[index]);
 });
-app.put('/tasks/addNewTask', function (req, res, next) {
+app.put('/tasks/newTask', function (req, res, next) {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
         return res.status(400).send('The data you provided is not correct!');
     }

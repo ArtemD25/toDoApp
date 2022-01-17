@@ -4,7 +4,6 @@ const app = express();
 
 interface Task {
   [key: string]: number | string | boolean;
-
   id: number;
   text: string;
   completed: boolean;
@@ -59,9 +58,18 @@ app.use((req, res, next) => {
   console.log(req.query)
   next();
 });
+
 app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
 app.get('/', (req, res, next) => {
+  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+});
+
+app.get('/allTasks', (req, res, next) => {
+  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+});
+
+app.get('/completedTasks', (req, res, next) => {
   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
 
@@ -70,7 +78,6 @@ app.get('/importantTasks', (req, res, next) => {
 });
 
 app.get('/getAllTasks', (req, res, next) => {
-  console.log('Sending all tasks...');
   res.json(tasks);
 });
 
@@ -99,24 +106,16 @@ app.patch('/tasks/:id', (req, res, next) => {
   let index;
   for (let i = 0; i < tasks.length; i++) {
     if (+tasks[i].id === +id) {
-      console.log(`---`);
-      console.log(tasks[i]);
-      console.log(`Old value: ${tasks[i][propertyToChange]}`);
       tasks[i][propertyToChange] = newValueForProperty;
-      console.log(`New value: ${tasks[i][propertyToChange]}`);
-      console.log(tasks[i]);
-      console.log(`---`);
       index = i;
       break;
     }
   }
-
   console.log(`Server changed ${propertyToChange} property to ${tasks[index][propertyToChange]}`);
-
   res.json(tasks[index]);
 })
 
-app.put('/tasks/addNewTask', (req, res, next) => {
+app.put('/tasks/newTask', (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!');
   }
