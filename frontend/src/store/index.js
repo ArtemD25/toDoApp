@@ -5,7 +5,8 @@ const initialState = {
   modalWindowTaskText: '',
   filteredTasksToShow: [],
   modalWindowTaskId: null,
-  modalWindowAction: null
+  modalWindowAction: null,
+  isLoaderShown: false
 }
 
 function toDoAppReducer(state = initialState, action) {
@@ -15,7 +16,8 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: state.modalWindowTaskText,
       filteredTasksToShow: state.filteredTasksToShow,
       modalWindowTaskId: state.modalWindowTaskId,
-      modalWindowAction: state.modalWindowAction
+      modalWindowAction: state.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
     }
   } else if (action.type === 'closeModalWindow' && state.isModalWindowShown) {
     return {
@@ -23,7 +25,8 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: state.modalWindowTaskText,
       filteredTasksToShow: state.filteredTasksToShow,
       modalWindowTaskId: state.modalWindowTaskId,
-      modalWindowAction: state.modalWindowAction
+      modalWindowAction: state.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
     }
   } else if (action.type === 'setModalWindowTaskText') {
     return {
@@ -31,7 +34,8 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: action.modalWindowTaskText,
       filteredTasksToShow: state.filteredTasksToShow,
       modalWindowTaskId: state.modalWindowTaskId,
-      modalWindowAction: state.modalWindowAction
+      modalWindowAction: state.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
     }
   } else if (action.type === 'setFilteredTasksToShow') {
     return {
@@ -39,7 +43,8 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: state.modalWindowTaskText,
       filteredTasksToShow: action.filteredTasksToShow,
       modalWindowTaskId: state.modalWindowTaskId,
-      modalWindowAction: state.modalWindowAction
+      modalWindowAction: state.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
     }
   } else if (action.type === 'setModalWindowTaskId') {
     return {
@@ -47,7 +52,8 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: state.modalWindowTaskText,
       filteredTasksToShow: state.filteredTasksToShow,
       modalWindowTaskId: action.modalWindowTaskId,
-      modalWindowAction: state.modalWindowAction
+      modalWindowAction: state.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
     }
   } else if (action.type === 'setModalWindowAction') {
     return {
@@ -55,7 +61,17 @@ function toDoAppReducer(state = initialState, action) {
       modalWindowTaskText: state.modalWindowTaskText,
       filteredTasksToShow: state.filteredTasksToShow,
       modalWindowTaskId: state.modalWindowTaskId,
-      modalWindowAction: action.modalWindowAction
+      modalWindowAction: action.modalWindowAction,
+      isLoaderShown: state.isLoaderShown
+    }
+  } else if (action.type === 'toggleLoader') {
+    return {
+      isModalWindowShown: state.isModalWindowShown,
+      modalWindowTaskText: state.modalWindowTaskText,
+      filteredTasksToShow: state.filteredTasksToShow,
+      modalWindowTaskId: state.modalWindowTaskId,
+      modalWindowAction: action.modalWindowAction,
+      isLoaderShown: action.toggleLoader
     }
   }
   

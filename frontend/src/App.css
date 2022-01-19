@@ -1,10 +1,9 @@
 .application {
-  position: relative;
   display: grid;
   grid-template-columns: 2fr 7fr;
   grid-template-rows: minmax(100px, 200px) auto;
   grid-template-areas: 'navbar header'
-                        'navbar main';
+                        '. main';
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -14,6 +13,8 @@
 }
 
 .navbar {
+  position: sticky;
+  top: 0;
   grid-area: navbar;
 }
 

@@ -28,7 +28,7 @@ export default function ModalWindow() {
   const MAX_TEXT_LENGTH = 64;
 
   function saveNewTaskTextToRedux(evt: React.ChangeEvent<HTMLTextAreaElement>) {
-    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: evt.target.value})
+    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: evt.target.value});
   }
 
   useEffect(() => {
@@ -39,9 +39,12 @@ export default function ModalWindow() {
     }
   }, [modalWindowTaskText])
 
+  function toggleLoader(shallLoaderBeShown: boolean) {
+    dispatch({type: 'toggleLoader', toggleLoader: shallLoaderBeShown});
+  }
+
   function saveTaskTextAndValidate(evt: React.ChangeEvent<HTMLTextAreaElement>) {
     saveNewTaskTextToRedux(evt);
-
   }
 
   function isNewTaskTextValid(): boolean {
@@ -56,6 +59,7 @@ export default function ModalWindow() {
   }
 
   function saveEditedTaskOnServer(id: string, taskText: string) {
+    toggleLoader(true);
     fetch(`/tasks/${id}`, {
       method: 'PATCH',
       headers: {
@@ -69,10 +73,12 @@ export default function ModalWindow() {
       .then(object => {
         updateTaskPropertyInRedux(object);
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => toggleLoader(false));
   }
 
   function saveNewTaskOnServer(taskText: string) {
+    toggleLoader(true);
     fetch(`/tasks/newTask`, {
       method: 'PUT',
       headers: {
@@ -86,7 +92,8 @@ export default function ModalWindow() {
       .then(object => {
         updateTaskPropertyInRedux(object);
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+      .finally(() => toggleLoader(false));
   }
 
   function updateTaskPropertyInRedux(updatedTask: Task) {
@@ -131,8 +138,21 @@ export default function ModalWindow() {
     }
   }
 
+  function handleEnterKeyPress(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (evt.key === 'Enter') {
+      chooseButtonActionAndRun();
+    }
+  }
+
   return (
-    <div className="ModalWindow__background">
+    <div
+      className="ModalWindow__background"
+      id="ModalWindow__background"
+      onClick={(evt: React.MouseEvent<HTMLDivElement>) => {
+        if ((evt.target as HTMLDivElement).id === 'ModalWindow__background') {
+          closeModalWindow()
+        }
+      }}>
       <form className="ModalWindow__body">
         <button
           className="ModalWindow__closeModal"
@@ -142,6 +162,7 @@ export default function ModalWindow() {
         <span className="ModalWindow__description">{setModalWindowCaptionText()}</span>
         <textarea
           onChange={saveTaskTextAndValidate}
+          onKeyPress={handleEnterKeyPress}
           className="ModalWindow__taskText"
           rows={3}
           placeholder="Type in a new task"

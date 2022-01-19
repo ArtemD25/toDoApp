@@ -1,53 +1,18 @@
 const path = require("path");
 const express = require('express');
 const app = express();
+const knex = require('../db/knexfile.js');
 
 interface Task {
   [key: string]: number | string | boolean;
   id: number;
   text: string;
-  completed: boolean;
-  important: boolean;
+  is_completed: boolean;
+  is_important: boolean;
 }
 
-const tasks: Task[] = [
-  {
-    id: 1,
-    text: 'Buy some fish',
-    completed: false,
-    important: false
-  },
-  {
-    id: 2,
-    text: 'Get birthday presents for Carl',
-    completed: false,
-    important: true
-  },
-  {
-    id: 3,
-    text: 'Feed the cat',
-    completed: false,
-    important: false
-  },
-  {
-    id: 4,
-    text: 'Bake the cake',
-    completed: false,
-    important: true
-  },
-  {
-    id: 5,
-    text: 'Write a letter',
-    completed: true,
-    important: false
-  },
-  {
-    id: 6,
-    text: 'Go backpacking to the Carpathians',
-    completed: true,
-    important: false
-  }
-]
+const MIN_TEXT_LENGTH = 1;
+const MAX_TEXT_LENGTH = 64;
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -77,95 +42,98 @@ app.get('/importantTasks', (req, res, next) => {
   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
 
-app.get('/getAllTasks', (req, res, next) => {
-  res.json(tasks);
+app.get('/getAllTasks', async (req, res, next) => {
+  const result = await knex
+    .select('*')
+    .from('tasks');
+
+  res.json({
+    tasks: result
+  });
 });
 
-app.get('/getCompletedTasks', (req, res, next) => {
-  res.json(getFilteredTasks(true, false));
+app.get('/getCompletedTasks', async (req, res, next) => {
+  const result = await knex
+    .select('*')
+    .from('tasks')
+    .whereRaw('is_completed IS TRUE');
+
+  res.json({
+    tasks: result
+  });
 });
 
-app.get('/getImportantTasks', (req, res, next) => {
-  res.send(JSON.stringify(getFilteredTasks(false, true)));
+app.get('/getImportantTasks', async (req, res, next) => {
+  const result = await knex
+    .select('*')
+    .from('tasks')
+    .whereRaw('is_important = TRUE');
+
+  res.json({
+    tasks: result
+  });
 });
 
 
-app.patch('/tasks/:id', (req, res, next) => {
+app.patch('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send('The data you provided is not correct!');
-  } else if (!tasks.some(item => +item.id === +req.params.id)) {
-    return res.status(400).send('You can`t update a non-existing task!');
-  }
+    return res.status(400).send('The data you provided is not correct!')
+  };
   const id = req.params.id;
   const propertyToChange = Object.keys(req.body)[0];
   const newValueForProperty = req.body[propertyToChange];
 
   console.log(`Server got req: change ${propertyToChange} prop to ${newValueForProperty}`);
-  console.log(req.body)
+  console.log(req.body);
 
-  let index;
-  for (let i = 0; i < tasks.length; i++) {
-    if (+tasks[i].id === +id) {
-      tasks[i][propertyToChange] = newValueForProperty;
-      index = i;
-      break;
-    }
+  const result = await knex('tasks')
+    .where('id', '=', id)
+    .update(propertyToChange, newValueForProperty)
+    .returning('*');
+
+  if (result) {
+    res.json(result[0]);
+  } else {
+    res.status(400).send('The data you provided is not correct!');
   }
-  console.log(`Server changed ${propertyToChange} property to ${tasks[index][propertyToChange]}`);
-  res.json(tasks[index]);
 })
 
-app.put('/tasks/newTask', (req, res, next) => {
+app.put('/tasks/newTask', async (req, res, next) => {
+  if (!Object.prototype.toString.call(req.body).includes('Object')
+    || req.body.text.length < MIN_TEXT_LENGTH
+    || req.body.text.length > MAX_TEXT_LENGTH) {
+    return res.status(400).send('The data you provided is not correct!');
+  }
+
+  const addedTask = await knex('tasks')
+    .insert({text: req.body.text})
+    .returning('*');
+
+  if (addedTask) {
+    res.json(addedTask[0]);
+  } else {
+    res.status(400).send('The data you provided is not correct!');
+  }
+})
+
+app.delete('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!');
   }
-  const newTask = {
-    id: idGenerator.next().value,
-    text: req.body.text,
-    completed: false,
-    important: false
-  }
-  tasks.push(<Task>newTask);
-  res.json(newTask);
-})
 
-app.delete('/tasks/:id', (req, res, next) => {
-  if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send('The data you provided is not correct!');
-  } else if (!tasks.some(item => +item.id === +req.params.id)) {
-    return res.status(400).send('You can`t update a non existing task!');
-  }
+  const deletedTask = await knex('tasks')
+    .where('id', '=', +req.params.id)
+    .del()
+    .returning('*');
 
-  let object;
-  for (let i = 0; i < tasks.length; i++) {
-    if (+tasks[i].id === +req.params.id) {
-      object = tasks[i];
-      tasks.splice(i, 1);
-      break;
-    }
+  if (deletedTask) {
+    res.json(deletedTask[0]);
+  } else {
+    res.status(400).send('The data you provided is not correct!');
   }
-
-  res.json(object);
-})
+});
 
 app.listen(3001, () => {
   const date = new Date();
   console.log(`Server started at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
-})
-
-function getFilteredTasks(completed: boolean, important: boolean) {
-  if (completed) {
-    return tasks.filter(task => task.completed);
-  } else if (important) {
-    return tasks.filter(task => task.important);
-  }
-}
-
-function* getId() {
-  let id = 50;
-  while(true) {
-    id += 1;
-    yield id;
-  }
-}
-const idGenerator = getId();
+});

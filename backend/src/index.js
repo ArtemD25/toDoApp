@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __generator = (this && this.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
@@ -25,47 +34,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 var path = require("path");
 var express = require('express');
 var app = express();
-var tasks = [
-    {
-        id: 1,
-        text: 'Buy some fish',
-        completed: false,
-        important: false
-    },
-    {
-        id: 2,
-        text: 'Get birthday presents for Carl',
-        completed: false,
-        important: true
-    },
-    {
-        id: 3,
-        text: 'Feed the cat',
-        completed: false,
-        important: false
-    },
-    {
-        id: 4,
-        text: 'Bake the cake',
-        completed: false,
-        important: true
-    },
-    {
-        id: 5,
-        text: 'Write a letter',
-        completed: true,
-        important: false
-    },
-    {
-        id: 6,
-        text: 'Go backpacking to the Carpathians',
-        completed: true,
-        important: false
-    }
-];
+var knex = require('../db/knexfile.js');
+var MIN_TEXT_LENGTH = 1;
+var MAX_TEXT_LENGTH = 64;
 app.use(express.json());
 app.use(function (req, res, next) {
     console.log("REQUEST INFO\n  Method: ".concat(req.method, "\n  URL: ").concat(req.originalUrl));
@@ -86,96 +61,136 @@ app.get('/completedTasks', function (req, res, next) {
 app.get('/importantTasks', function (req, res, next) {
     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
-app.get('/getAllTasks', function (req, res, next) {
-    res.json(tasks);
-});
-app.get('/getCompletedTasks', function (req, res, next) {
-    res.json(getFilteredTasks(true, false));
-});
-app.get('/getImportantTasks', function (req, res, next) {
-    res.send(JSON.stringify(getFilteredTasks(false, true)));
-});
-app.patch('/tasks/:id', function (req, res, next) {
-    if (!Object.prototype.toString.call(req.body).includes('Object')) {
-        return res.status(400).send('The data you provided is not correct!');
-    }
-    else if (!tasks.some(function (item) { return +item.id === +req.params.id; })) {
-        return res.status(400).send('You can`t update a non-existing task!');
-    }
-    var id = req.params.id;
-    var propertyToChange = Object.keys(req.body)[0];
-    var newValueForProperty = req.body[propertyToChange];
-    console.log("Server got req: change ".concat(propertyToChange, " prop to ").concat(newValueForProperty));
-    console.log(req.body);
-    var index;
-    for (var i = 0; i < tasks.length; i++) {
-        if (+tasks[i].id === +id) {
-            tasks[i][propertyToChange] = newValueForProperty;
-            index = i;
-            break;
+app.get('/getAllTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, knex
+                    .select('*')
+                    .from('tasks')];
+            case 1:
+                result = _a.sent();
+                res.json({
+                    tasks: result
+                });
+                return [2 /*return*/];
         }
-    }
-    console.log("Server changed ".concat(propertyToChange, " property to ").concat(tasks[index][propertyToChange]));
-    res.json(tasks[index]);
-});
-app.put('/tasks/newTask', function (req, res, next) {
-    if (!Object.prototype.toString.call(req.body).includes('Object')) {
-        return res.status(400).send('The data you provided is not correct!');
-    }
-    var newTask = {
-        id: idGenerator.next().value,
-        text: req.body.text,
-        completed: false,
-        important: false
-    };
-    tasks.push(newTask);
-    res.json(newTask);
-});
-app["delete"]('/tasks/:id', function (req, res, next) {
-    if (!Object.prototype.toString.call(req.body).includes('Object')) {
-        return res.status(400).send('The data you provided is not correct!');
-    }
-    else if (!tasks.some(function (item) { return +item.id === +req.params.id; })) {
-        return res.status(400).send('You can`t update a non existing task!');
-    }
-    var object;
-    for (var i = 0; i < tasks.length; i++) {
-        if (+tasks[i].id === +req.params.id) {
-            object = tasks[i];
-            tasks.splice(i, 1);
-            break;
+    });
+}); });
+app.get('/getCompletedTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, knex
+                    .select('*')
+                    .from('tasks')
+                    .whereRaw('is_completed IS TRUE')];
+            case 1:
+                result = _a.sent();
+                res.json({
+                    tasks: result
+                });
+                return [2 /*return*/];
         }
-    }
-    res.json(object);
-});
+    });
+}); });
+app.get('/getImportantTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, knex
+                    .select('*')
+                    .from('tasks')
+                    .whereRaw('is_important = TRUE')];
+            case 1:
+                result = _a.sent();
+                res.json({
+                    tasks: result
+                });
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var id, propertyToChange, newValueForProperty, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!Object.prototype.toString.call(req.body).includes('Object')) {
+                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                }
+                ;
+                id = req.params.id;
+                propertyToChange = Object.keys(req.body)[0];
+                newValueForProperty = req.body[propertyToChange];
+                console.log("Server got req: change ".concat(propertyToChange, " prop to ").concat(newValueForProperty));
+                console.log(req.body);
+                return [4 /*yield*/, knex('tasks')
+                        .where('id', '=', id)
+                        .update(propertyToChange, newValueForProperty)
+                        .returning('*')];
+            case 1:
+                result = _a.sent();
+                if (result) {
+                    res.json(result[0]);
+                }
+                else {
+                    res.status(400).send('The data you provided is not correct!');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.put('/tasks/newTask', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var addedTask;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!Object.prototype.toString.call(req.body).includes('Object')
+                    || req.body.text.length < MIN_TEXT_LENGTH
+                    || req.body.text.length > MAX_TEXT_LENGTH) {
+                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                }
+                return [4 /*yield*/, knex('tasks')
+                        .insert({ text: req.body.text })
+                        .returning('*')];
+            case 1:
+                addedTask = _a.sent();
+                if (addedTask) {
+                    res.json(addedTask[0]);
+                }
+                else {
+                    res.status(400).send('The data you provided is not correct!');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+app["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+    var deletedTask;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!Object.prototype.toString.call(req.body).includes('Object')) {
+                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                }
+                return [4 /*yield*/, knex('tasks')
+                        .where('id', '=', +req.params.id)
+                        .del()
+                        .returning('*')];
+            case 1:
+                deletedTask = _a.sent();
+                if (deletedTask) {
+                    res.json(deletedTask[0]);
+                }
+                else {
+                    res.status(400).send('The data you provided is not correct!');
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.listen(3001, function () {
     var date = new Date();
     console.log("Server started at ".concat(date.getHours(), ":").concat(date.getMinutes(), ":").concat(date.getSeconds()));
 });
-function getFilteredTasks(completed, important) {
-    if (completed) {
-        return tasks.filter(function (task) { return task.completed; });
-    }
-    else if (important) {
-        return tasks.filter(function (task) { return task.important; });
-    }
-}
-function getId() {
-    var id;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                id = 50;
-                _a.label = 1;
-            case 1:
-                if (!true) return [3 /*break*/, 3];
-                id += 1;
-                return [4 /*yield*/, id];
-            case 2:
-                _a.sent();
-                return [3 /*break*/, 1];
-            case 3: return [2 /*return*/];
-        }
-    });
-}
-var idGenerator = getId();

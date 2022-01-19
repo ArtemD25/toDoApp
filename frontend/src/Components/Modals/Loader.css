@@ -1,0 +1,47 @@
+.Loader__container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  background-color: rgba(0,0,0,0.2);
+}
+.Loader__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.Loader__ball {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  animation: 1500ms bounce ease infinite;
+}
+.Loader__ball:not(:last-child) {
+  margin-right: 15px;
+}
+.Loader__ball--blue {
+  background-color: #4285f5;
+}
+.Loader__ball--red {
+  background-color: #ea4436;
+  animation-delay: 0.25s;
+}
+.Loader__ball--yellow {
+  background-color: #fbbd06;
+  animation-delay: 0.5s;
+}
+.Loader__ball--green {
+  background-color: #34a952;
+  animation-delay: 0.75s;
+}
+@keyframes bounce {
+  50% {
+    transform: translateY(25px);
+  }
+}

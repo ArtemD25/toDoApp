@@ -8,8 +8,8 @@ interface Task {
   [key: string]: number | string | boolean;
   id: number;
   text: string;
-  completed: boolean;
-  important: boolean;
+  is_completed: boolean;
+  is_important: boolean;
 }
 
 interface Props {
@@ -32,14 +32,21 @@ export default function AllTasksToRender(props: Props) {
     getTasksArrayFromServer();
   }, []);
 
+  function toggleLoader(shallLoaderBeShown: boolean) {
+    dispatch({type: 'toggleLoader', toggleLoader: shallLoaderBeShown});
+  }
+
   function getTasksArrayFromServer() {
+    toggleLoader(true);
     fetch(`/${props.url}`)
       .then(response => response.json())
       .then(tasksArray => {
         console.log('Tasks array')
         console.log(tasksArray);
-        dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: tasksArray})
-      });
+        dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: tasksArray.tasks})
+      })
+      .catch(err => console.log(err))
+      .finally(() => toggleLoader(false));
   }
 
   return (
