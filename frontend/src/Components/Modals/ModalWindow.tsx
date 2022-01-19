@@ -11,11 +11,10 @@ interface State {
 
 interface Task {
   [key: string]: number | string | boolean;
-
   id: number;
   text: string;
-  completed: boolean;
-  important: boolean;
+  is_completed: boolean;
+  is_important: boolean;
 }
 
 export default function ModalWindow() {
