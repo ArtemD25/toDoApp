@@ -39,29 +39,39 @@ var path = require("path");
 var express = require('express');
 var app = express();
 var knex = require('../db/knexfile.js');
+var staticRouter = express.Router();
+var apiRouter = express.Router();
 var MIN_TEXT_LENGTH = 1;
 var MAX_TEXT_LENGTH = 64;
 app.use(express.json());
+/* DELETE */
 app.use(function (req, res, next) {
     console.log("REQUEST INFO\n  Method: ".concat(req.method, "\n  URL: ").concat(req.originalUrl));
     console.log("REQUEST INFO: query");
     console.log(req.query);
     next();
 });
+app.use('/static', staticRouter);
+app.use('/api', apiRouter);
 app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
-app.get('/', function (req, res, next) {
+staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], function (req, res, next) {
     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
-app.get('/allTasks', function (req, res, next) {
-    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+app.get('/*', function (req, res, next) {
+    res.redirect('/static');
 });
-app.get('/completedTasks', function (req, res, next) {
-    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-});
-app.get('/importantTasks', function (req, res, next) {
-    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-});
-app.get('/getAllTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+// app.get('/allTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
+//
+// app.get('/completedTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
+//
+// app.get('/importantTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
+apiRouter.get('/getAllTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -77,7 +87,7 @@ app.get('/getAllTasks', function (req, res, next) { return __awaiter(_this, void
         }
     });
 }); });
-app.get('/getCompletedTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+apiRouter.get('/getCompletedTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -94,7 +104,7 @@ app.get('/getCompletedTasks', function (req, res, next) { return __awaiter(_this
         }
     });
 }); });
-app.get('/getImportantTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+apiRouter.get('/getImportantTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -111,7 +121,7 @@ app.get('/getImportantTasks', function (req, res, next) { return __awaiter(_this
         }
     });
 }); });
-app.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+apiRouter.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var id, propertyToChange, newValueForProperty, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -119,10 +129,10 @@ app.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this, void
                 if (!Object.prototype.toString.call(req.body).includes('Object')) {
                     return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
                 }
-                ;
                 id = req.params.id;
                 propertyToChange = Object.keys(req.body)[0];
                 newValueForProperty = req.body[propertyToChange];
+                /* DELETE */
                 console.log("Server got req: change ".concat(propertyToChange, " prop to ").concat(newValueForProperty));
                 console.log(req.body);
                 return [4 /*yield*/, knex('tasks')
@@ -141,7 +151,7 @@ app.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this, void
         }
     });
 }); });
-app.put('/tasks/newTask', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+apiRouter.put('/tasks/newTask', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var addedTask;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -166,7 +176,7 @@ app.put('/tasks/newTask', function (req, res, next) { return __awaiter(_this, vo
         }
     });
 }); });
-app["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+apiRouter["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var deletedTask;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -191,6 +201,14 @@ app["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_this, 
     });
 }); });
 app.listen(3001, function () {
-    var date = new Date();
-    console.log("Server started at ".concat(date.getHours(), ":").concat(date.getMinutes(), ":").concat(date.getSeconds()));
+    console.log(getTimeMessageString(new Date()));
 });
+function getTimeMessageString(date) {
+    var twoDigitsTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(function (time) {
+        if (time.toString().length === 1) {
+            return "0".concat(time);
+        }
+        return "".concat(time);
+    });
+    return "Server started at ".concat(twoDigitsTime[0], ":").concat(twoDigitsTime[1], ":").concat(twoDigitsTime[2]);
+}

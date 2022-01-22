@@ -39,7 +39,7 @@ export default function AllTasks(props: Props) {
 
   function getTasksArrayFromServer() {
     toggleLoader(true);
-    fetch(`/${props.url}`)
+    fetch(`/api/${props.url}`)
       .then(response => response.json())
       .then(tasksArray => {
         console.log('Tasks array')

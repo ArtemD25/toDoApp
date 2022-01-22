@@ -2,6 +2,8 @@ const path = require("path");
 const express = require('express');
 const app = express();
 const knex = require('../db/knexfile.js');
+const staticRouter = express.Router();
+const apiRouter = express.Router();
 
 interface Task {
   [key: string]: number | string | boolean;
@@ -15,6 +17,7 @@ const MIN_TEXT_LENGTH = 1;
 const MAX_TEXT_LENGTH = 64;
 
 app.use(express.json());
+/* DELETE */
 app.use((req, res, next) => {
   console.log(`REQUEST INFO
   Method: ${req.method}
@@ -24,25 +27,31 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/static', staticRouter);
+app.use('/api', apiRouter);
 app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
-app.get('/', (req, res, next) => {
+staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
 });
 
-app.get('/allTasks', (req, res, next) => {
-  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+app.get('/*', (req, res, next) => {
+  res.redirect('/static');
 });
 
-app.get('/completedTasks', (req, res, next) => {
-  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-});
+// app.get('/allTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
+//
+// app.get('/completedTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
+//
+// app.get('/importantTasks', (req, res, next) => {
+//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+// });
 
-app.get('/importantTasks', (req, res, next) => {
-  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-});
-
-app.get('/getAllTasks', async (req, res, next) => {
+apiRouter.get('/getAllTasks', async (req, res, next) => {
   const result = await knex
     .select('*')
     .from('tasks');
@@ -52,7 +61,7 @@ app.get('/getAllTasks', async (req, res, next) => {
   });
 });
 
-app.get('/getCompletedTasks', async (req, res, next) => {
+apiRouter.get('/getCompletedTasks', async (req, res, next) => {
   const result = await knex
     .select('*')
     .from('tasks')
@@ -63,7 +72,7 @@ app.get('/getCompletedTasks', async (req, res, next) => {
   });
 });
 
-app.get('/getImportantTasks', async (req, res, next) => {
+apiRouter.get('/getImportantTasks', async (req, res, next) => {
   const result = await knex
     .select('*')
     .from('tasks')
@@ -75,14 +84,15 @@ app.get('/getImportantTasks', async (req, res, next) => {
 });
 
 
-app.patch('/tasks/:id', async (req, res, next) => {
+apiRouter.patch('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!')
-  };
+  }
   const id = req.params.id;
   const propertyToChange = Object.keys(req.body)[0];
   const newValueForProperty = req.body[propertyToChange];
 
+  /* DELETE */
   console.log(`Server got req: change ${propertyToChange} prop to ${newValueForProperty}`);
   console.log(req.body);
 
@@ -98,7 +108,7 @@ app.patch('/tasks/:id', async (req, res, next) => {
   }
 })
 
-app.put('/tasks/newTask', async (req, res, next) => {
+apiRouter.put('/tasks/newTask', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')
     || req.body.text.length < MIN_TEXT_LENGTH
     || req.body.text.length > MAX_TEXT_LENGTH) {
@@ -116,7 +126,7 @@ app.put('/tasks/newTask', async (req, res, next) => {
   }
 })
 
-app.delete('/tasks/:id', async (req, res, next) => {
+apiRouter.delete('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
     return res.status(400).send('The data you provided is not correct!');
   }
@@ -134,6 +144,15 @@ app.delete('/tasks/:id', async (req, res, next) => {
 });
 
 app.listen(3001, () => {
-  const date = new Date();
-  console.log(`Server started at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
+  console.log(getTimeMessageString(new Date()));
 });
+
+function getTimeMessageString(date: Date): string {
+  const twoDigitsTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(time => {
+    if (time.toString().length === 1) {
+      return `0${time}`;
+    }
+    return `${time}`;
+  });
+  return `Server started at ${twoDigitsTime[0]}:${twoDigitsTime[1]}:${twoDigitsTime[2]}`
+}

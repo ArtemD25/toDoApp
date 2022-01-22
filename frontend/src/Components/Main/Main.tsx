@@ -11,17 +11,17 @@ export default function Main() {
     <ul className="taskList">
       <Routes>
         <Route
-          path="/allTasks"
+          path="/static/allTasks"
           element={<AllTasks
             isAddNewTaskButtonVisible={true}
             url="getAllTasks"/>}/>
         <Route
-          path="/importantTasks"
+          path="/static/importantTasks"
           element={<ImportantTasks
             isAddNewTaskButtonVisible={false}
             url="getImportantTasks"/>}/>
         <Route
-          path="/completedTasks"
+          path="/static/completedTasks"
           element={<CompletedTasks
             isAddNewTaskButtonVisible={false}
             url="getCompletedTasks"/>}/>
