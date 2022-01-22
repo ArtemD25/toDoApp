@@ -6,7 +6,8 @@ const initialState = {
   filteredTasksToShow: [],
   modalWindowTaskId: null,
   modalWindowAction: null,
-  isLoaderShown: false
+  isLoaderShown: false,
+  appPageOpened: ''
 }
 
 const stateSlice = createSlice({
@@ -30,7 +31,11 @@ const stateSlice = createSlice({
     },
     setLoaderVisibility(state, action) {
       state.isLoaderShown = action.payload;
+    },
+    setAppPageOpened(state, action) {
+      state.appPageOpened = action.payload;
     }
+
   }
 });
 

@@ -21,17 +21,20 @@ interface Props {
 interface State {
   tasks: Task[];
   isModalSubmitFired: boolean;
-  filteredTasksToShow: Task[]
+  filteredTasksToShow: Task[];
+  appPageOpened: string;
 }
 
-export default function AllTasks(props: Props) {
+export default function TasksToRender(props: Props) {
   const dispatch = useDispatch();
   const filteredTasksToShow = useSelector((state: State) => state.filteredTasksToShow);
-  console.log(`url: ${props.url}`)
+  const appPageOpened = useSelector((state: State) => state.appPageOpened);
+
+  dispatch(actions.setAppPageOpened(props.url));
 
   useEffect(() => {
     getTasksArrayFromServer();
-  }, []);
+  }, [appPageOpened]);
 
   function toggleLoader(shallLoaderBeShown: boolean) {
     dispatch(actions.setLoaderVisibility(shallLoaderBeShown));
@@ -42,8 +45,6 @@ export default function AllTasks(props: Props) {
     fetch(`/api/${props.url}`)
       .then(response => response.json())
       .then(tasksArray => {
-        console.log('Tasks array')
-        console.log(tasksArray);
         dispatch(actions.setFilteredTasksToShow(tasksArray.tasks));
       })
       .catch(err => console.log(err))

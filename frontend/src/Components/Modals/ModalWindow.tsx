@@ -44,10 +44,6 @@ export default function ModalWindow() {
     dispatch(actions.setLoaderVisibility(shallLoaderBeShown));
   }
 
-  function saveTaskTextAndValidate(evt: React.ChangeEvent<HTMLTextAreaElement>) {
-    saveNewTaskTextToRedux(evt);
-  }
-
   function isNewTaskTextValid(): boolean {
     return modalWindowTaskText.length >= MIN_TEXT_LENGTH && modalWindowTaskText.length <= MAX_TEXT_LENGTH;
   }
@@ -162,7 +158,7 @@ export default function ModalWindow() {
         </button>
         <span className="ModalWindow__description">{setModalWindowCaptionText()}</span>
         <textarea
-          onChange={saveTaskTextAndValidate}
+          onChange={saveNewTaskTextToRedux}
           onKeyPress={handleEnterKeyPress}
           className="ModalWindow__taskText"
           rows={3}

@@ -1,7 +1,5 @@
 import React from 'react';
-import AllTasks from './TasksToRender/AllTasks';
-import ImportantTasks from './TasksToRender/ImportantTasks';
-import CompletedTasks from './TasksToRender/CompletedTasks';
+import TasksToRender from './TasksToRender/TasksToRender';
 import './Main.css';
 import {Routes, Route} from "react-router-dom";
 
@@ -12,17 +10,17 @@ export default function Main() {
       <Routes>
         <Route
           path="/static/allTasks"
-          element={<AllTasks
+          element={<TasksToRender
             isAddNewTaskButtonVisible={true}
             url="getAllTasks"/>}/>
         <Route
           path="/static/importantTasks"
-          element={<ImportantTasks
+          element={<TasksToRender
             isAddNewTaskButtonVisible={false}
             url="getImportantTasks"/>}/>
         <Route
           path="/static/completedTasks"
-          element={<CompletedTasks
+          element={<TasksToRender
             isAddNewTaskButtonVisible={false}
             url="getCompletedTasks"/>}/>
       </Routes>

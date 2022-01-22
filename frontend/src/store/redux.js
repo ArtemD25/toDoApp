@@ -8,7 +8,8 @@ var initialState = {
     filteredTasksToShow: [],
     modalWindowTaskId: null,
     modalWindowAction: null,
-    isLoaderShown: false
+    isLoaderShown: false,
+    appPageOpened: ''
 };
 var stateSlice = (0, toolkit_1.createSlice)({
     name: 'stateSlice',
@@ -31,6 +32,9 @@ var stateSlice = (0, toolkit_1.createSlice)({
         },
         setLoaderVisibility: function (state, action) {
             state.isLoaderShown = action.payload;
+        },
+        setAppPageOpened: function (state, action) {
+            state.appPageOpened = action.payload;
         }
     }
 });

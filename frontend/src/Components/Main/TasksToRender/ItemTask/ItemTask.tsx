@@ -91,7 +91,6 @@ export default function ItemTask(props: Props) {
   }
 
   function updateTaskPropertyInRedux(updatedTask: Task) {
-    console.log('updateTaskPropertyInState')
     const updatedTasks = JSON.parse(JSON.stringify(filteredTasksToShow))
     for (let i = 0; i < updatedTasks.length; i++) {
       if (+updatedTasks[i].id === +updatedTask.id) {
