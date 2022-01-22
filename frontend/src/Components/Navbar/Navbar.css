@@ -37,6 +37,7 @@
 
 .NavLink__icon {
   display: block;
+  min-width: 20px;
   width: 20px;
   height: 20px;
   margin: 0 20px 0 0;
