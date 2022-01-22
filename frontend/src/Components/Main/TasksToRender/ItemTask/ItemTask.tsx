@@ -104,17 +104,20 @@ export default function ItemTask(props: Props) {
 
   return (
     <li className="ItemTask__container">
-      <button
-        className={`ItemTask__circleSign ${props.task.is_completed ? 'ItemTask__circleSign--completed' : null}`}
-        onClick={changeTaskProperty}
-        data-property="is_completed"
-        type="button"
-        aria-label="A button allowing to mark / unmark a task to be done"
-        title="Mark task completed">
+      <div className="ItemTask__text-btn-wrapper">
+        <button
+          className={`ItemTask__circleSign ${props.task.is_completed ? 'ItemTask__circleSign--completed' : ''}`}
+          onClick={changeTaskProperty}
+          data-property="is_completed"
+          type="button"
+          aria-label="A button allowing to mark / unmark a task to be done"
+          title="Mark task completed">
       </button>
       <span
-        className={`ItemTask__taskText ${props.task.is_completed ? 'ItemTask__taskText--completed' : null}`}>
-        {props.task.text}</span>
+        className={`ItemTask__taskText ${props.task.is_completed ? 'ItemTask__taskText--completed' : ''}`}>
+        {props.task.text}
+      </span>
+      </div>
       <ul className="ItemTask__actions">
         <li className="ItemTask__action">
           <button
@@ -130,7 +133,7 @@ export default function ItemTask(props: Props) {
         </li>
         <li className="ItemTask__action">
           <button
-            className={`ItemTask__button ItemTask__button--star ${props.task.is_important ? 'ItemTask__button--starOn' : null}`}
+            className={`ItemTask__button ItemTask__button--star ${props.task.is_important ? 'ItemTask__button--starOn' : ''}`}
             onClick={changeTaskProperty}
             data-property="is_important"
             aria-label="Mark task as important button"

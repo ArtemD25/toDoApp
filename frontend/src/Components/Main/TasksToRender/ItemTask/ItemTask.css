@@ -7,6 +7,19 @@
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
+@media (max-width: 500px) {
+  .ItemTask__container {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.ItemTask__text-btn-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .ItemTask__circleSign {
   margin: 0 20px 0 0;
   padding: 0;
@@ -21,6 +34,10 @@
 
 .ItemTask__circleSign--completed {
   background-color: #7c7c7c;
+}
+
+.ItemTask__taskText {
+  margin-right: 20px;
 }
 
 .ItemTask__taskText--completed {
@@ -39,8 +56,20 @@
   list-style-type: none;
 }
 
+@media (max-width: 500px) {
+  .ItemTask__actions {
+    margin: 15px 0 0 0;
+  }
+}
+
 .ItemTask__action:not(:last-child) {
   margin-right: 10px;
+}
+
+@media (max-width: 500px) {
+  .ItemTask__action {
+    margin-right: 20px;
+  }
 }
 
 .ItemTask__button {

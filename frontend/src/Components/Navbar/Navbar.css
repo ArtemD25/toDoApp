@@ -10,6 +10,12 @@
   list-style-type: none;
 }
 
+@media (max-width: 900px) {
+  .Navbar__list {
+    padding: 10px 0;
+  }
+}
+
 .NavLink__container {
   display: flex;
   padding: 10px 20px;
