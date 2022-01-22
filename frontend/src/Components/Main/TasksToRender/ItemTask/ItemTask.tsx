@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './ItemTask.css';
 import {useDispatch, useSelector} from "react-redux";
+import {actions} from '../../../../store/redux.js';
 
 interface Props {
   task: {
@@ -32,14 +33,14 @@ export default function ItemTask(props: Props) {
   const filteredTasksToShow = useSelector((state: State) => state.filteredTasksToShow);
 
   function toggleLoader(shallLoaderBeShown: boolean) {
-    dispatch({type: 'toggleLoader', toggleLoader: shallLoaderBeShown});
+    dispatch(actions.setLoaderVisibility(shallLoaderBeShown));
   }
 
   const openModalWindow = () => {
-    dispatch({type: 'setModalWindowAction', modalWindowAction: 'editTask'});
-    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: props.task.text});
-    dispatch({type: 'setModalWindowTaskId', modalWindowTaskId: props.task.id});
-    dispatch({type: 'showModalWindow'});
+    dispatch(actions.setModalWindowAction('editTask'));
+    dispatch(actions.setModalWindowTaskText(props.task.text));
+    dispatch(actions.setModalWindowTaskId(props.task.id));
+    dispatch(actions.setModalWindowVisibility(true));
   }
 
   function changeTaskProperty(evt: React.MouseEvent<HTMLButtonElement>) {
@@ -84,7 +85,7 @@ export default function ItemTask(props: Props) {
         break;
       }
     }
-    dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: updatedTasks})
+    dispatch(actions.setFilteredTasksToShow(updatedTasks));
   }
 
   function updateTaskPropertyInRedux(updatedTask: Task) {
@@ -96,8 +97,8 @@ export default function ItemTask(props: Props) {
         break;
       }
     }
-    dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: updatedTasks})
-    dispatch({type: 'closeModalWindow'});
+    dispatch(actions.setFilteredTasksToShow(updatedTasks));
+    dispatch(actions.setModalWindowVisibility(false));
   }
 
   return (

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './ModalWindow.css';
 import {useDispatch, useSelector} from "react-redux";
+import {actions} from '../../store/redux.js';
 
 interface State {
   modalWindowTaskText: string;
@@ -28,7 +29,7 @@ export default function ModalWindow() {
   const MAX_TEXT_LENGTH = 64;
 
   function saveNewTaskTextToRedux(evt: React.ChangeEvent<HTMLTextAreaElement>) {
-    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: evt.target.value});
+    dispatch(actions.setModalWindowTaskText(evt.target.value));
   }
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function ModalWindow() {
   }, [modalWindowTaskText])
 
   function toggleLoader(shallLoaderBeShown: boolean) {
-    dispatch({type: 'toggleLoader', toggleLoader: shallLoaderBeShown});
+    dispatch(actions.setLoaderVisibility(shallLoaderBeShown));
   }
 
   function saveTaskTextAndValidate(evt: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -52,10 +53,10 @@ export default function ModalWindow() {
   }
 
   function closeModalWindow() {
-    dispatch({type: 'setModalWindowTaskText', modalWindowTaskText: ''});
-    dispatch({type: 'setModalWindowTaskId', modalWindowTaskText: null});
-    dispatch({type: 'setModalWindowAction', modalWindowAction: null})
-    dispatch({type: 'closeModalWindow'});
+    dispatch(actions.setModalWindowTaskText(''));
+    dispatch(actions.setModalWindowTaskId(null));
+    dispatch(actions.setModalWindowAction(null));
+    dispatch(actions.setModalWindowVisibility(false));
   }
 
   function saveEditedTaskOnServer(id: string, taskText: string) {
@@ -102,12 +103,12 @@ export default function ModalWindow() {
       for (let i = 0; i < updatedTasks.length; i++) {
         if (+updatedTasks[i].id === +updatedTask.id) {
           updatedTasks[i] = updatedTask;
-          dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: updatedTasks});
+          dispatch(actions.setFilteredTasksToShow(updatedTasks));
           break;
         }
       }
     } else if (modalWindowAction === 'createTask') {
-      dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: [...filteredTasksToShow, updatedTask]});
+      dispatch(actions.setFilteredTasksToShow([...filteredTasksToShow, updatedTask]));
     }
   }
 

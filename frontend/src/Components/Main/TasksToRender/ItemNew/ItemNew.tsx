@@ -1,14 +1,14 @@
 import React from 'react';
 import './ItemNew.css';
 import {useDispatch} from "react-redux";
+import {actions} from '../../../../store/redux.js';
 
 export default function ItemNew() {
   const dispatch = useDispatch()
 
   const openModalWindow = () => {
-    dispatch({type: 'setModalWindowAction', modalWindowAction: 'createTask'});
-    // dispatch({type: 'setModalWindowTaskInitialText', modalWindowTaskInitialText: ''});
-    dispatch({type: 'showModalWindow'});
+    dispatch(actions.setModalWindowAction('createTask'));
+    dispatch(actions.setModalWindowVisibility(true));
   }
 
   return (

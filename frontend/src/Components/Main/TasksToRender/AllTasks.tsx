@@ -1,8 +1,9 @@
-import React, {useCallback, useEffect} from "react";
+import React, {useEffect} from "react";
 import ItemNew from "./ItemNew/ItemNew";
 import ItemTask from './ItemTask/ItemTask';
 import NoItems from './NoItems/NoItems';
 import {useDispatch, useSelector} from "react-redux";
+import {actions} from '../../../store/redux.js';
 
 interface Task {
   [key: string]: number | string | boolean;
@@ -33,7 +34,7 @@ export default function AllTasks(props: Props) {
   }, []);
 
   function toggleLoader(shallLoaderBeShown: boolean) {
-    dispatch({type: 'toggleLoader', toggleLoader: shallLoaderBeShown});
+    dispatch(actions.setLoaderVisibility(shallLoaderBeShown));
   }
 
   function getTasksArrayFromServer() {
@@ -43,7 +44,7 @@ export default function AllTasks(props: Props) {
       .then(tasksArray => {
         console.log('Tasks array')
         console.log(tasksArray);
-        dispatch({type: 'setFilteredTasksToShow', filteredTasksToShow: tasksArray.tasks})
+        dispatch(actions.setFilteredTasksToShow(tasksArray.tasks));
       })
       .catch(err => console.log(err))
       .finally(() => toggleLoader(false));
