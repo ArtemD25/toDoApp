@@ -39,18 +39,6 @@ app.get('/*', (req, res, next) => {
   res.redirect('/static');
 });
 
-// app.get('/allTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
-//
-// app.get('/completedTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
-//
-// app.get('/importantTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
-
 apiRouter.get('/getAllTasks', async (req, res, next) => {
   const result = await knex
     .select('*')
@@ -91,10 +79,6 @@ apiRouter.patch('/tasks/:id', async (req, res, next) => {
   const id = req.params.id;
   const propertyToChange = Object.keys(req.body)[0];
   const newValueForProperty = req.body[propertyToChange];
-
-  /* DELETE */
-  console.log(`Server got req: change ${propertyToChange} prop to ${newValueForProperty}`);
-  console.log(req.body);
 
   const result = await knex('tasks')
     .where('id', '=', id)
