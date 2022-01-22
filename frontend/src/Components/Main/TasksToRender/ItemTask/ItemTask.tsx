@@ -65,6 +65,8 @@ export default function ItemTask(props: Props) {
   }
 
   function deleteTask() {
+    if (!window.confirm('Do you really wanna delete this task?')) return;
+
     toggleLoader(true);
     fetch(`/api/tasks/${props.task.id}`, {
       method: 'DELETE'
