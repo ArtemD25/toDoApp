@@ -29,8 +29,8 @@
     "eject": "react-scripts eject",
     "server": "node ../backend/src/index.js",
     "tsc-server": "tsc ../backend/src/index.ts",
-    "dev": "npm run build && npm run server",
-    "dev-tsc": "npm run tsc-server && npm run build && npm run server"
+    "dev": "tsc ./src/store/redux.ts && npm run build && npm run server",
+    "dev-tsc": "tsc ./src/store/redux.ts && npm run tsc-server && npm run build && npm run server"
   },
   "eslintConfig": {
     "extends": [
