@@ -28,3 +28,6 @@ yarn-error.log*
 loader.jpg
 *.png
 *.txt
+backend/src/index.js
+frontend/src/store/redux.js
+

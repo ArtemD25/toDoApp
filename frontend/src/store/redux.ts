@@ -35,7 +35,6 @@ const stateSlice = createSlice({
     setAppPageOpened(state, action) {
       state.appPageOpened = action.payload;
     }
-
   }
 });
 

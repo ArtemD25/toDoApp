@@ -8,6 +8,7 @@ const apiRouter = express.Router();
 const MIN_TEXT_LENGTH = 1;
 const MAX_TEXT_LENGTH = 64;
 const DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
+const DATA_NOT_FOUND_MSG = 'Data not found';
 
 interface Task {
   [key: string]: number | string | boolean;
@@ -18,22 +19,16 @@ interface Task {
 }
 
 app.use(express.json());
-/* DELETE */
-app.use((req, res, next) => {
-  console.log(`REQUEST INFO
-  Method: ${req.method}
-  URL: ${req.originalUrl}`);
-  console.log(`REQUEST INFO: query`);
-  console.log(req.query)
-  next();
-});
-
 app.use('/static', staticRouter);
 app.use('/api', apiRouter);
 app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
 staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
-  res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+  try {
+    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.get('/*', (req, res, next) => {
@@ -41,102 +36,114 @@ app.get('/*', (req, res, next) => {
 });
 
 apiRouter.get('/getAllTasks', async (req, res, next) => {
-  const result = await knex
-    .select('*')
-    .from('tasks');
+  try {
+    const result = await knex
+      .select('*')
+      .from('tasks');
 
-  if (result) {
     res.json({
       tasks: result
     });
-  } else {
-    res.status(500).send('Data not found');
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
 apiRouter.get('/getCompletedTasks', async (req, res, next) => {
-  const result = await knex
-    .select('*')
-    .from('tasks')
-    .whereRaw('is_completed IS TRUE');
+  try {
+    const result = await knex
+      .select('*')
+      .from('tasks')
+      .whereRaw('is_completed IS TRUE');
 
-  if (result) {
     res.json({
       tasks: result
     });
-  } else {
-    res.status(500).send('Data not found');
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
 apiRouter.get('/getImportantTasks', async (req, res, next) => {
-  const result = await knex
-    .select('*')
-    .from('tasks')
-    .whereRaw('is_important = TRUE');
+  try {
+    const result = await knex
+      .select('*')
+      .from('tasks')
+      .whereRaw('is_important = TRUE');
 
-  if (result) {
     res.json({
       tasks: result
     });
-  } else {
-    res.status(500).send('Data not found');
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
 
 apiRouter.patch('/tasks/:id', async (req, res, next) => {
-  if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send(DATA_NOT_CORRECT_MSG)
-  }
-  const id = req.params.id;
-  const propertyToChange = Object.keys(req.body)[0];
-  const newValueForProperty = req.body[propertyToChange];
+  try {
+    if (!Object.prototype.toString.call(req.body).includes('Object')) {
+      return res.status(400).send(DATA_NOT_CORRECT_MSG)
+    }
+    const id = req.params.id;
+    const propertyToChange = Object.keys(req.body)[0];
+    const newValueForProperty = req.body[propertyToChange];
 
-  const result = await knex('tasks')
-    .where('id', '=', id)
-    .update(propertyToChange, newValueForProperty)
-    .returning('*');
+    const result = await knex('tasks')
+      .where('id', '=', id)
+      .update(propertyToChange, newValueForProperty)
+      .returning('*');
 
-  if (result) {
-    res.json(result[0]);
-  } else {
-    res.status(400).send(DATA_NOT_CORRECT_MSG);
+    if (result.length > 0) {
+      res.json(result[0]);
+    } else {
+      res.status(400).send(DATA_NOT_CORRECT_MSG);
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 })
 
 apiRouter.put('/tasks/newTask', async (req, res, next) => {
-  if (!Object.prototype.toString.call(req.body).includes('Object')
-    || req.body.text.length < MIN_TEXT_LENGTH
-    || req.body.text.length > MAX_TEXT_LENGTH) {
-    return res.status(400).send(DATA_NOT_CORRECT_MSG);
-  }
+  try {
+    if (!Object.prototype.toString.call(req.body).includes('Object')
+      || req.body.text.length < MIN_TEXT_LENGTH
+      || req.body.text.length > MAX_TEXT_LENGTH) {
+      return res.status(400).send(DATA_NOT_CORRECT_MSG);
+    }
 
-  const addedTask = await knex('tasks')
-    .insert({text: req.body.text})
-    .returning('*');
+    const addedTask = await knex('tasks')
+      .insert({text: req.body.text})
+      .returning('*');
 
-  if (addedTask) {
-    res.json(addedTask[0]);
-  } else {
-    res.status(400).send(DATA_NOT_CORRECT_MSG);
+    if (addedTask.length > 0) {
+      res.json(addedTask[0]);
+    } else {
+      res.status(400).send(DATA_NOT_CORRECT_MSG);
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 })
 
 apiRouter.delete('/tasks/:id', async (req, res, next) => {
-  if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send(DATA_NOT_CORRECT_MSG);
-  }
+  try {
+    if (!Object.prototype.toString.call(req.body).includes('Object')) {
+      return res.status(400).send(DATA_NOT_CORRECT_MSG);
+    }
 
-  const deletedTask = await knex('tasks')
-    .where('id', '=', +req.params.id)
-    .del()
-    .returning('*');
+    const deletedTask = await knex('tasks')
+      .where('id', '=', +req.params.id)
+      .del()
+      .returning('*');
 
-  if (deletedTask) {
-    res.json(deletedTask[0]);
-  } else {
-    res.status(400).send(DATA_NOT_CORRECT_MSG);
+    if (deletedTask.length > 0) {
+      res.json(deletedTask[0]);
+    } else {
+      res.status(400).send(DATA_NOT_CORRECT_MSG);
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
