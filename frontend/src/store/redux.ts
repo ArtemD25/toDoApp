@@ -10,6 +10,14 @@ const initialState = {
   appPageOpened: ''
 }
 
+interface Task {
+  [key: string]: number | string | boolean;
+  id: number;
+  text: string;
+  is_completed: boolean;
+  is_important: boolean;
+}
+
 const stateSlice = createSlice({
   name: 'stateSlice',
   initialState,
@@ -21,7 +29,10 @@ const stateSlice = createSlice({
       state.modalWindowTaskText = action.payload;
     },
     setFilteredTasksToShow(state, action) {
-      state.filteredTasksToShow = action.payload;
+      const tasksArray = JSON.parse(JSON.stringify(action.payload));
+      state.filteredTasksToShow = tasksArray.sort((firstTask: Task, secondTask: Task) => {
+        return firstTask.id - secondTask.id
+      });
     },
     setModalWindowTaskId(state, action) {
       state.modalWindowTaskId = action.payload;

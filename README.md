@@ -18,8 +18,8 @@ npm install
 ```shell
 cd frontend
 ```
-2. Run script to
-   1. compile server- and redux-file to js
+2. Run the script below to
+   1. compile typescript server- and redux-file to javascript
    2. build react-app
    3. run server
 ```shell
