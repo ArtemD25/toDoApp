@@ -5,6 +5,10 @@ const knex = require('../db/knexfile.js');
 const staticRouter = express.Router();
 const apiRouter = express.Router();
 
+const MIN_TEXT_LENGTH = 1;
+const MAX_TEXT_LENGTH = 64;
+const DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
+
 interface Task {
   [key: string]: number | string | boolean;
   id: number;
@@ -12,9 +16,6 @@ interface Task {
   is_completed: boolean;
   is_important: boolean;
 }
-
-const MIN_TEXT_LENGTH = 1;
-const MAX_TEXT_LENGTH = 64;
 
 app.use(express.json());
 /* DELETE */
@@ -44,9 +45,13 @@ apiRouter.get('/getAllTasks', async (req, res, next) => {
     .select('*')
     .from('tasks');
 
-  res.json({
-    tasks: result
-  });
+  if (result) {
+    res.json({
+      tasks: result
+    });
+  } else {
+    res.status(500).send('Data not found');
+  }
 });
 
 apiRouter.get('/getCompletedTasks', async (req, res, next) => {
@@ -55,9 +60,13 @@ apiRouter.get('/getCompletedTasks', async (req, res, next) => {
     .from('tasks')
     .whereRaw('is_completed IS TRUE');
 
-  res.json({
-    tasks: result
-  });
+  if (result) {
+    res.json({
+      tasks: result
+    });
+  } else {
+    res.status(500).send('Data not found');
+  }
 });
 
 apiRouter.get('/getImportantTasks', async (req, res, next) => {
@@ -66,15 +75,19 @@ apiRouter.get('/getImportantTasks', async (req, res, next) => {
     .from('tasks')
     .whereRaw('is_important = TRUE');
 
-  res.json({
-    tasks: result
-  });
+  if (result) {
+    res.json({
+      tasks: result
+    });
+  } else {
+    res.status(500).send('Data not found');
+  }
 });
 
 
 apiRouter.patch('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send('The data you provided is not correct!')
+    return res.status(400).send(DATA_NOT_CORRECT_MSG)
   }
   const id = req.params.id;
   const propertyToChange = Object.keys(req.body)[0];
@@ -88,7 +101,7 @@ apiRouter.patch('/tasks/:id', async (req, res, next) => {
   if (result) {
     res.json(result[0]);
   } else {
-    res.status(400).send('The data you provided is not correct!');
+    res.status(400).send(DATA_NOT_CORRECT_MSG);
   }
 })
 
@@ -96,7 +109,7 @@ apiRouter.put('/tasks/newTask', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')
     || req.body.text.length < MIN_TEXT_LENGTH
     || req.body.text.length > MAX_TEXT_LENGTH) {
-    return res.status(400).send('The data you provided is not correct!');
+    return res.status(400).send(DATA_NOT_CORRECT_MSG);
   }
 
   const addedTask = await knex('tasks')
@@ -106,13 +119,13 @@ apiRouter.put('/tasks/newTask', async (req, res, next) => {
   if (addedTask) {
     res.json(addedTask[0]);
   } else {
-    res.status(400).send('The data you provided is not correct!');
+    res.status(400).send(DATA_NOT_CORRECT_MSG);
   }
 })
 
 apiRouter.delete('/tasks/:id', async (req, res, next) => {
   if (!Object.prototype.toString.call(req.body).includes('Object')) {
-    return res.status(400).send('The data you provided is not correct!');
+    return res.status(400).send(DATA_NOT_CORRECT_MSG);
   }
 
   const deletedTask = await knex('tasks')
@@ -123,13 +136,19 @@ apiRouter.delete('/tasks/:id', async (req, res, next) => {
   if (deletedTask) {
     res.json(deletedTask[0]);
   } else {
-    res.status(400).send('The data you provided is not correct!');
+    res.status(400).send(DATA_NOT_CORRECT_MSG);
   }
 });
 
 app.listen(3001, () => {
   console.log(getTimeMessageString(new Date()));
 });
+
+app.use((error, req, res, next) => {
+  res.status(500).json({
+    error: error.message
+  })
+})
 
 function getTimeMessageString(date: Date): string {
   const twoDigitsTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(time => {

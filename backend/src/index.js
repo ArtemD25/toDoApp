@@ -43,6 +43,7 @@ var staticRouter = express.Router();
 var apiRouter = express.Router();
 var MIN_TEXT_LENGTH = 1;
 var MAX_TEXT_LENGTH = 64;
+var DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
 app.use(express.json());
 /* DELETE */
 app.use(function (req, res, next) {
@@ -60,17 +61,6 @@ staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], funct
 app.get('/*', function (req, res, next) {
     res.redirect('/static');
 });
-// app.get('/allTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
-//
-// app.get('/completedTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
-//
-// app.get('/importantTasks', (req, res, next) => {
-//   res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-// });
 apiRouter.get('/getAllTasks', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {
@@ -80,9 +70,14 @@ apiRouter.get('/getAllTasks', function (req, res, next) { return __awaiter(_this
                     .from('tasks')];
             case 1:
                 result = _a.sent();
-                res.json({
-                    tasks: result
-                });
+                if (result) {
+                    res.json({
+                        tasks: result
+                    });
+                }
+                else {
+                    res.status(500).send('Data not found');
+                }
                 return [2 /*return*/];
         }
     });
@@ -97,9 +92,14 @@ apiRouter.get('/getCompletedTasks', function (req, res, next) { return __awaiter
                     .whereRaw('is_completed IS TRUE')];
             case 1:
                 result = _a.sent();
-                res.json({
-                    tasks: result
-                });
+                if (result) {
+                    res.json({
+                        tasks: result
+                    });
+                }
+                else {
+                    res.status(500).send('Data not found');
+                }
                 return [2 /*return*/];
         }
     });
@@ -114,9 +114,14 @@ apiRouter.get('/getImportantTasks', function (req, res, next) { return __awaiter
                     .whereRaw('is_important = TRUE')];
             case 1:
                 result = _a.sent();
-                res.json({
-                    tasks: result
-                });
+                if (result) {
+                    res.json({
+                        tasks: result
+                    });
+                }
+                else {
+                    res.status(500).send('Data not found');
+                }
                 return [2 /*return*/];
         }
     });
@@ -127,14 +132,11 @@ apiRouter.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this
         switch (_a.label) {
             case 0:
                 if (!Object.prototype.toString.call(req.body).includes('Object')) {
-                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                    return [2 /*return*/, res.status(400).send(DATA_NOT_CORRECT_MSG)];
                 }
                 id = req.params.id;
                 propertyToChange = Object.keys(req.body)[0];
                 newValueForProperty = req.body[propertyToChange];
-                /* DELETE */
-                console.log("Server got req: change ".concat(propertyToChange, " prop to ").concat(newValueForProperty));
-                console.log(req.body);
                 return [4 /*yield*/, knex('tasks')
                         .where('id', '=', id)
                         .update(propertyToChange, newValueForProperty)
@@ -145,7 +147,7 @@ apiRouter.patch('/tasks/:id', function (req, res, next) { return __awaiter(_this
                     res.json(result[0]);
                 }
                 else {
-                    res.status(400).send('The data you provided is not correct!');
+                    res.status(400).send(DATA_NOT_CORRECT_MSG);
                 }
                 return [2 /*return*/];
         }
@@ -159,7 +161,7 @@ apiRouter.put('/tasks/newTask', function (req, res, next) { return __awaiter(_th
                 if (!Object.prototype.toString.call(req.body).includes('Object')
                     || req.body.text.length < MIN_TEXT_LENGTH
                     || req.body.text.length > MAX_TEXT_LENGTH) {
-                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                    return [2 /*return*/, res.status(400).send(DATA_NOT_CORRECT_MSG)];
                 }
                 return [4 /*yield*/, knex('tasks')
                         .insert({ text: req.body.text })
@@ -170,7 +172,7 @@ apiRouter.put('/tasks/newTask', function (req, res, next) { return __awaiter(_th
                     res.json(addedTask[0]);
                 }
                 else {
-                    res.status(400).send('The data you provided is not correct!');
+                    res.status(400).send(DATA_NOT_CORRECT_MSG);
                 }
                 return [2 /*return*/];
         }
@@ -182,7 +184,7 @@ apiRouter["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_
         switch (_a.label) {
             case 0:
                 if (!Object.prototype.toString.call(req.body).includes('Object')) {
-                    return [2 /*return*/, res.status(400).send('The data you provided is not correct!')];
+                    return [2 /*return*/, res.status(400).send(DATA_NOT_CORRECT_MSG)];
                 }
                 return [4 /*yield*/, knex('tasks')
                         .where('id', '=', +req.params.id)
@@ -194,7 +196,7 @@ apiRouter["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_
                     res.json(deletedTask[0]);
                 }
                 else {
-                    res.status(400).send('The data you provided is not correct!');
+                    res.status(400).send(DATA_NOT_CORRECT_MSG);
                 }
                 return [2 /*return*/];
         }
@@ -202,6 +204,11 @@ apiRouter["delete"]('/tasks/:id', function (req, res, next) { return __awaiter(_
 }); });
 app.listen(3001, function () {
     console.log(getTimeMessageString(new Date()));
+});
+app.use(function (error, req, res, next) {
+    res.status(500).json({
+        error: error.message
+    });
 });
 function getTimeMessageString(date) {
     var twoDigitsTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(function (time) {
