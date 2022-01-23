@@ -1,0 +1,8 @@
+.idea
+*.jpg
+*.png
+*.txt
+src/store/redux.js
+.DS_Store
+node_modules
+build

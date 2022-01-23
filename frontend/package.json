@@ -30,7 +30,8 @@
     "server": "node ../backend/src/index.js",
     "tsc-server": "tsc ../backend/src/index.ts",
     "dev": "tsc ./src/store/redux.ts && npm run build && npm run server",
-    "dev-tsc": "tsc ./src/store/redux.ts && npm run tsc-server && npm run build && npm run server"
+    "dev-tsc": "tsc ./src/store/redux.ts && npm run tsc-server && npm run build && npm run server",
+    "docker-front": "tsc ./src/store/redux.ts && npm run build"
   },
   "eslintConfig": {
     "extends": [

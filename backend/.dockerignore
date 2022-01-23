@@ -1,0 +1,8 @@
+.idea
+*.jpg
+*.png
+*.txt
+src/index.js
+.DS_Store
+node_modules
+db/create_db_and_fill_with_dummy_data.sql

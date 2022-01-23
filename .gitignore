@@ -22,10 +22,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/.idea
-/img
+.idea/
+img/
 *.jpg
-loader.jpg
 *.png
 *.txt
 backend/src/index.js
