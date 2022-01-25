@@ -7,13 +7,19 @@ services:
     depends_on:
       - db
     container_name: back
+    environment:
+      is_docker: true
   front:
     build: ./frontend
     ports:
       - "80:80"
     container_name: front
   db:
-    image: postgres
+    image: postgres # build
     ports:
       - "5432:5432"
     container_name: db
+    environment:
+      POSTGRES_PASSWORD: 12345,
+    volumes:
+      - "c:/Users/user1/postgres_db:/var/lib/postgresql/data"

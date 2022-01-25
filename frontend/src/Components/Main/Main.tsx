@@ -12,17 +12,17 @@ export default function Main() {
           path="/static/allTasks"
           element={<TasksToRender
             isAddNewTaskButtonVisible={true}
-            url="getAllTasks"/>}/>
+            url="all"/>}/>
         <Route
           path="/static/importantTasks"
           element={<TasksToRender
             isAddNewTaskButtonVisible={false}
-            url="getImportantTasks"/>}/>
+            url="important"/>}/>
         <Route
           path="/static/completedTasks"
           element={<TasksToRender
             isAddNewTaskButtonVisible={false}
-            url="getCompletedTasks"/>}/>
+            url="completed"/>}/>
       </Routes>
     </ul>
   )

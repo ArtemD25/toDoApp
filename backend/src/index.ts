@@ -3,12 +3,11 @@ const express = require('express');
 const app = express();
 const knex = require('../db/knexfile.js');
 const staticRouter = express.Router();
-const apiRouter = express.Router();
+const tasksRouter = express.Router();
 
 const MIN_TEXT_LENGTH = 1;
 const MAX_TEXT_LENGTH = 64;
 const DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
-const DATA_NOT_FOUND_MSG = 'Data not found';
 
 interface Task {
   [key: string]: number | string | boolean;
@@ -20,7 +19,7 @@ interface Task {
 
 app.use(express.json());
 app.use('/static', staticRouter);
-app.use('/api', apiRouter);
+app.use('/tasks', tasksRouter);
 app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
 staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
@@ -37,7 +36,7 @@ app.get('/*', (req, res, next) => {
   res.redirect('/static');
 });
 
-apiRouter.get('/getAllTasks', async (req, res, next) => {
+tasksRouter.get('/all', async (req, res, next) => {
   try {
     const result = await knex
       .select('*')
@@ -53,7 +52,7 @@ apiRouter.get('/getAllTasks', async (req, res, next) => {
   }
 });
 
-apiRouter.get('/getCompletedTasks', async (req, res, next) => {
+tasksRouter.get('/completed', async (req, res, next) => {
   try {
     const result = await knex
       .select('*')
@@ -70,7 +69,7 @@ apiRouter.get('/getCompletedTasks', async (req, res, next) => {
   }
 });
 
-apiRouter.get('/getImportantTasks', async (req, res, next) => {
+tasksRouter.get('/important', async (req, res, next) => {
   try {
     const result = await knex
       .select('*')
@@ -86,7 +85,7 @@ apiRouter.get('/getImportantTasks', async (req, res, next) => {
 });
 
 
-apiRouter.patch('/tasks/:id', async (req, res, next) => {
+tasksRouter.patch('/:id', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).json({
@@ -116,7 +115,7 @@ apiRouter.patch('/tasks/:id', async (req, res, next) => {
   }
 })
 
-apiRouter.put('/tasks/newTask', async (req, res, next) => {
+tasksRouter.put('/newTask', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')
       || req.body.text.length < MIN_TEXT_LENGTH
@@ -138,7 +137,7 @@ apiRouter.put('/tasks/newTask', async (req, res, next) => {
   }
 })
 
-apiRouter.delete('/tasks/:id', async (req, res, next) => {
+tasksRouter.delete('/:id', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).send(DATA_NOT_CORRECT_MSG);

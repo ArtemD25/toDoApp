@@ -63,7 +63,7 @@ export default function ModalWindow() {
 
   function saveEditedTaskOnServer(id: string, taskText: string) {
     toggleLoader(true);
-    fetch(`/api/tasks/${id}`, {
+    fetch(`/tasks/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ export default function ModalWindow() {
 
   function saveNewTaskOnServer(taskText: string) {
     toggleLoader(true);
-    fetch(`/api/tasks/newTask`, {
+    fetch(`/tasks/newTask`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
