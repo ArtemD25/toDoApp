@@ -57,7 +57,9 @@ tasksRouter.get('/completed', async (req, res, next) => {
     const result = await knex
       .select('*')
       .from('tasks')
-      .whereRaw('is_completed IS TRUE');
+      .where({
+        is_completed: true
+      });
 
     res.json({
       tasks: result
@@ -74,7 +76,9 @@ tasksRouter.get('/important', async (req, res, next) => {
     const result = await knex
       .select('*')
       .from('tasks')
-      .whereRaw('is_important = TRUE');
+      .where({
+        is_important: true
+      });
 
     res.json({
       tasks: result
