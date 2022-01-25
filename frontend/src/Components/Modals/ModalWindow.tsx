@@ -34,9 +34,9 @@ export default function ModalWindow() {
 
   useEffect(() => {
     if (isNewTaskTextValid()) {
-      setModalWindowWarningText('Your text is fine 😎');
+      setModalWindowWarningText(`Your text is fine with ${modalWindowTaskText.length} character(s) 😎`);
     } else {
-      setModalWindowWarningText(`Type in 1-64 characters. Currently you typed in ${modalWindowTaskText.length}`);
+      setModalWindowWarningText(`Type in 1-64 character(s). Currently you typed in ${modalWindowTaskText.length}`);
     }
   }, [modalWindowTaskText])
 
@@ -55,6 +55,12 @@ export default function ModalWindow() {
     dispatch(actions.setModalWindowVisibility(false));
   }
 
+  function closeModalWindowOnBackgroundClick(evt: React.MouseEvent<HTMLDivElement>) {
+    if ((evt.target as HTMLDivElement).id === 'ModalWindow__background') {
+      closeModalWindow();
+    }
+  }
+
   function saveEditedTaskOnServer(id: string, taskText: string) {
     toggleLoader(true);
     fetch(`/api/tasks/${id}`, {
@@ -66,7 +72,13 @@ export default function ModalWindow() {
         text: taskText
       })
     })
-      .then(response => response.json())
+      .then(async (response) => {
+        const jsonFromServer = await response.json();
+        if (response.ok) {
+          return jsonFromServer;
+        }
+        throw new Error(jsonFromServer.error);
+      })
       .then(object => {
         updateTaskPropertyInRedux(object);
       })
@@ -85,7 +97,13 @@ export default function ModalWindow() {
         text: taskText
       })
     })
-      .then(response => response.json())
+      .then(async (response) => {
+        const jsonFromServer = await response.json();
+        if (response.ok) {
+          return jsonFromServer;
+        }
+        throw new Error(jsonFromServer.error);
+      })
       .then(object => {
         updateTaskPropertyInRedux(object);
       })
@@ -145,15 +163,12 @@ export default function ModalWindow() {
     <div
       className="ModalWindow__background"
       id="ModalWindow__background"
-      onClick={(evt: React.MouseEvent<HTMLDivElement>) => {
-        if ((evt.target as HTMLDivElement).id === 'ModalWindow__background') {
-          closeModalWindow()
-        }
-      }}>
+      onClick={closeModalWindowOnBackgroundClick}>
       <form className="ModalWindow__body">
         <button
           className="ModalWindow__closeModal"
-          onClick={closeModalWindow}>
+          onClick={closeModalWindow}
+          type="button">
           <span className="visually-hidden">The close button for the modal window</span>
         </button>
         <span className="ModalWindow__description">{setModalWindowCaptionText()}</span>

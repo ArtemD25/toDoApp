@@ -9,7 +9,7 @@ node_modules
 coverage/
 
 # production
-build
+build/
 
 # misc
 .DS_Store
@@ -29,4 +29,4 @@ img/
 *.txt
 backend/src/index.js
 frontend/src/store/redux.js
-
+.env

@@ -56,7 +56,13 @@ export default function ItemTask(props: Props) {
         [propertyToChange]: !props.task[propertyToChange]
       })
     })
-      .then(response => response.json())
+      .then(async (response) => {
+        const jsonFromServer = await response.json();
+        if (response.ok) {
+          return jsonFromServer;
+        }
+        throw new Error(jsonFromServer.error);
+      })
       .then(object => {
         updateTaskPropertyInRedux(object);
       })
@@ -71,7 +77,13 @@ export default function ItemTask(props: Props) {
     fetch(`/api/tasks/${props.task.id}`, {
       method: 'DELETE'
     })
-      .then(response => response.json())
+      .then(async (response) => {
+        const jsonFromServer = await response.json();
+        if (response.ok) {
+          return jsonFromServer;
+        }
+        throw new Error(jsonFromServer.error);
+      })
       .then(taskObject => {
         deleteTaskInRedux(+taskObject.id);
       })

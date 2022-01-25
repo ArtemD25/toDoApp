@@ -27,7 +27,9 @@ staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req,
   try {
     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      error: error.message
+    });
   }
 });
 
@@ -45,7 +47,9 @@ apiRouter.get('/getAllTasks', async (req, res, next) => {
       tasks: result
     });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      error: error.message
+    });
   }
 });
 
@@ -60,7 +64,9 @@ apiRouter.get('/getCompletedTasks', async (req, res, next) => {
       tasks: result
     });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      error: error.message
+    });
   }
 });
 
@@ -83,7 +89,9 @@ apiRouter.get('/getImportantTasks', async (req, res, next) => {
 apiRouter.patch('/tasks/:id', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
-      return res.status(400).send(DATA_NOT_CORRECT_MSG)
+      return res.status(400).json({
+        error: DATA_NOT_CORRECT_MSG
+      })
     }
     const id = req.params.id;
     const propertyToChange = Object.keys(req.body)[0];
@@ -95,12 +103,16 @@ apiRouter.patch('/tasks/:id', async (req, res, next) => {
       .returning('*');
 
     if (result.length > 0) {
-      res.json(result[0]);
+      return res.json(result[0]);
     } else {
-      res.status(400).send(DATA_NOT_CORRECT_MSG);
+      return res.status(400).json({
+        error: DATA_NOT_CORRECT_MSG
+      });
     }
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      error: error.message
+    });
   }
 })
 

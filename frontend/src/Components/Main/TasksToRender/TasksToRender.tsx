@@ -43,7 +43,13 @@ export default function TasksToRender(props: Props) {
   function getTasksArrayFromServer() {
     toggleLoader(true);
     fetch(`/api/${props.url}`)
-      .then(response => response.json())
+      .then(async (response) => {
+        const jsonFromServer = await response.json();
+        if (response.ok) {
+          return jsonFromServer;
+        }
+        throw new Error(jsonFromServer.error);
+      })
       .then(tasksArray => {
         dispatch(actions.setFilteredTasksToShow(tasksArray.tasks));
       })

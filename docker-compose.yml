@@ -1,0 +1,19 @@
+version: "3"
+services:
+  back:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    container_name: back
+  front:
+    build: ./frontend
+    ports:
+      - "80:80"
+    container_name: front
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    container_name: db
