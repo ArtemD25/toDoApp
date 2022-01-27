@@ -3,33 +3,28 @@
 The application allows you to create, update and delete tasks as well as mark / unmark them completed or important
 
 ## Launching the app
+Make sure you have node.js installed on your machine as well as docker. Also make sure there is no local database running on your port 5432. If that is the case, temporarily stop this process.
 
-1. Make sure you have node.js installed on your machine. Install all packages needed to build and launch the app on frontend (**/frontend**):
+In order to launch the project, type in the following command in your shell (from the project root directory)
 ```shell
-cd frontend
-npm install
+docker-compose up
 ```
-and on backend (**/backend**):
-```shell
-cd ../backend
-npm install
-```
-2. Change working directory to /frontend
-```shell
-cd frontend
-```
-2. Run the script below to
-   1. compile typescript server- and redux-file to javascript
-   2. build react-app
-   3. run server
-```shell
-npm run dev-tsc
-```
-## Database
+This will take a while, so be patient :)
 
-When you connect to your local database and launch the app, there will be no data available since one has not added anything yet. You can add data manually in the app (there is a 'Add task' button). But you also can fill your database with dummy data before launching the app. In order to do that launch the code in the following sql-file:
-```
-backend/db/create_db_and_fill_with_dummy_data.sql
+After all three containers are launched open your browser and explore `http://localhost:3000`
+
+When you launch the app, there will be no data available since one hasn't added anything yet. You can add data (tasks) manually in the app (there is a 'Add task' button on the 'All tasks'-page)
+
+You also can fill your database with dummy data using the following sql-command:
+```postgresql
+INSERT INTO tasks(text)
+VALUES
+    ('Feed the cat (or not)'),
+    ('Grab a bite at the McDonald`s'),
+    ('Get b-day presents for Carl and Helen'),
+    ('Walk the dog in the park'),
+    ('Get some sleep'),
+    ('Watch Game of Thrones, season 8');
 ```
 
 ## Technologies used
