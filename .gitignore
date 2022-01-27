@@ -24,6 +24,7 @@ yarn-error.log*
 
 .idea/
 img/
+database_folder/
 *.jpg
 *.png
 *.txt
