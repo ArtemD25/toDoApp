@@ -3,7 +3,7 @@
 The application allows you to create, update and delete tasks as well as mark / unmark them completed or important
 
 ## Launching the app
-Make sure you have node.js installed on your machine as well as docker. Also make sure there is no local database running on your port 5432. If that is the case, temporarily stop this process.
+Make sure you have node.js installed on your machine as well as docker.
 
 In order to launch the project, type in the following command in your shell (from the project root directory)
 ```shell
