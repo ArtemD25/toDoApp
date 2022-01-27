@@ -28,4 +28,4 @@ services:
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
     container_name: db
     volumes:
-      - "c:/Users/user1/postgres_db:/var/lib/postgresql/data"
+      - "./database_folder:/var/lib/postgresql/data"
