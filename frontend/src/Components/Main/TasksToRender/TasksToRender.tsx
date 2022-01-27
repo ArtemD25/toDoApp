@@ -30,6 +30,7 @@ export default function TasksToRender(props: Props) {
   const filteredTasksToShow = useSelector((state: State) => state.filteredTasksToShow);
   const appPageOpened = useSelector((state: State) => state.appPageOpened);
 
+  // A flag for useEffect to rerender the element
   dispatch(actions.setAppPageOpened(props.url));
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function TasksToRender(props: Props) {
 
   function getTasksArrayFromServer() {
     toggleLoader(true);
-    fetch(`/tasks/${props.url}`)
+    fetch(`http://localhost:3001/tasks/${props.url}`)
       .then(async (response) => {
         const jsonFromServer = await response.json();
         if (response.ok) {

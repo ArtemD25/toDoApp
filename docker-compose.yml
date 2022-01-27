@@ -11,15 +11,21 @@ services:
       is_docker: true
   front:
     build: ./frontend
-    ports:
-      - "80:80"
     container_name: front
+#    expose:
+#      - 3000
+    ports:
+      - "3000:3000"
+#    stdin_open: true
   db:
-    image: postgres # build
+    build: ./db
     ports:
       - "5432:5432"
-    container_name: db
     environment:
-      POSTGRES_PASSWORD: 12345,
+      - POSTGRES_PASSWORD=wellsfargo22
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=to_do_app_tasks
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    container_name: db
     volumes:
       - "c:/Users/user1/postgres_db:/var/lib/postgresql/data"

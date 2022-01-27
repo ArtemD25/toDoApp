@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const knex = require('../db/knexfile.js');
 const staticRouter = express.Router();
 const tasksRouter = express.Router();
@@ -9,32 +10,27 @@ const MIN_TEXT_LENGTH = 1;
 const MAX_TEXT_LENGTH = 64;
 const DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
 
-interface Task {
-  [key: string]: number | string | boolean;
-  id: number;
-  text: string;
-  is_completed: boolean;
-  is_important: boolean;
-}
-
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 app.use('/static', staticRouter);
 app.use('/tasks', tasksRouter);
-app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
+// app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
-staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
-  try {
-    res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
+// staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
+//   try {
+//     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
+//   } catch (error) {
+//     res.status(500).json({
+//       error: error.message
+//     });
+//   }
+// });
 
-app.get('/*', (req, res, next) => {
-  res.redirect('/static');
-});
+// app.get('/*', (req, res, next) => {
+//   res.redirect('/static');
+// });
 
 tasksRouter.get('/all', async (req, res, next) => {
   try {

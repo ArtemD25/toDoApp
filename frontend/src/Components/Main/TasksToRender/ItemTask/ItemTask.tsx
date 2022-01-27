@@ -46,7 +46,7 @@ export default function ItemTask(props: Props) {
   function changeTaskProperty(evt: React.MouseEvent<HTMLButtonElement>) {
     toggleLoader(true);
     const propertyToChange = evt.currentTarget.getAttribute('data-property');
-    fetch(`/tasks/${props.task.id}`, {
+    fetch(`http://localhost:3001/tasks/${props.task.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -74,7 +74,7 @@ export default function ItemTask(props: Props) {
     if (!window.confirm('Do you really wanna delete this task?')) return;
 
     toggleLoader(true);
-    fetch(`/tasks/${props.task.id}`, {
+    fetch(`http://localhost:3001/tasks/${props.task.id}`, {
       method: 'DELETE'
     })
       .then(async (response) => {
