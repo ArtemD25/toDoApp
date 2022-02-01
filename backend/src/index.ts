@@ -1,42 +1,47 @@
-const path = require("path");
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const knex = require('../db/knexfile.js');
-const staticRouter = express.Router();
 const tasksRouter = express.Router();
 
 const MIN_TEXT_LENGTH = 1;
 const MAX_TEXT_LENGTH = 64;
+const PORT = 3001;
 const DATA_NOT_CORRECT_MSG = 'The data you provided is not correct!';
 
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000'
 }));
-app.use('/static', staticRouter);
 app.use('/tasks', tasksRouter);
-// app.use(express.static(path.resolve(__dirname + '/../../frontend/build')));
 
-// staticRouter.get(['/', '/allTasks', '/completedTasks', '/importantTasks'], (req, res, next) => {
-//   try {
-//     res.sendFile(path.resolve(__dirname + '/../../frontend/build/index.html'));
-//   } catch (error) {
-//     res.status(500).json({
-//       error: error.message
-//     });
-//   }
-// });
-
-// app.get('/*', (req, res, next) => {
-//   res.redirect('/static');
-// });
-
-tasksRouter.get('/all', async (req, res, next) => {
+tasksRouter.get('/:query', async (req, res) => {
   try {
-    const result = await knex
-      .select('*')
-      .from('tasks');
+    const userQuery = req.params.query;
+    let result;
+    switch(userQuery) {
+      case 'all':
+        result = await knex
+          .select('*')
+          .from('tasks');
+        break;
+      case 'completed':
+        result = await knex.select('*').from('tasks')
+          .where({
+            is_completed: true
+          });
+        break;
+      case 'important':
+        result = await knex.select('*').from('tasks')
+          .where({
+            is_important: true
+          });
+        break;
+      default:
+        return res.status(404).send({
+          error: DATA_NOT_CORRECT_MSG
+        })
+    }
 
     res.json({
       tasks: result
@@ -48,44 +53,7 @@ tasksRouter.get('/all', async (req, res, next) => {
   }
 });
 
-tasksRouter.get('/completed', async (req, res, next) => {
-  try {
-    const result = await knex
-      .select('*')
-      .from('tasks')
-      .where({
-        is_completed: true
-      });
-
-    res.json({
-      tasks: result
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-tasksRouter.get('/important', async (req, res, next) => {
-  try {
-    const result = await knex
-      .select('*')
-      .from('tasks')
-      .where({
-        is_important: true
-      });
-
-    res.json({
-      tasks: result
-    });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-
-tasksRouter.patch('/:id', async (req, res, next) => {
+tasksRouter.patch('/:id', async (req, res) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).json({
@@ -115,7 +83,7 @@ tasksRouter.patch('/:id', async (req, res, next) => {
   }
 })
 
-tasksRouter.put('/newTask', async (req, res, next) => {
+tasksRouter.put('/newTask', async (req, res) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')
       || req.body.text.length < MIN_TEXT_LENGTH
@@ -137,7 +105,7 @@ tasksRouter.put('/newTask', async (req, res, next) => {
   }
 })
 
-tasksRouter.delete('/:id', async (req, res, next) => {
+tasksRouter.delete('/:id', async (req, res) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).send(DATA_NOT_CORRECT_MSG);
@@ -158,7 +126,7 @@ tasksRouter.delete('/:id', async (req, res, next) => {
   }
 });
 
-app.listen(3001, () => {
+app.listen(PORT, () => {
   console.log(getTimeMessageString(new Date()));
 });
 
@@ -175,5 +143,5 @@ function getTimeMessageString(date: Date): string {
     }
     return `${time}`;
   });
-  return `Server started at ${twoDigitsTime[0]}:${twoDigitsTime[1]}:${twoDigitsTime[2]}`
+  return `Server started at ${twoDigitsTime[0]}:${twoDigitsTime[1]}:${twoDigitsTime[2]} on port ${PORT}`
 }

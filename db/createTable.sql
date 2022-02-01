@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tasks(
     id SERIAL PRIMARY KEY,
-    text VARCHAR(192) NOT NULL,
+    text VARCHAR(260) NOT NULL,
     is_completed BOOLEAN DEFAULT FALSE,
     is_important BOOLEAN DEFAULT FALSE
 );
