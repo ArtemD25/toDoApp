@@ -12,17 +12,14 @@ services:
   front:
     build: ./frontend
     container_name: front
-#    expose:
-#      - 3000
     ports:
       - "3000:3000"
-#    stdin_open: true
   db:
     build: ./db
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=wellsfargo22
+      - POSTGRES_PASSWORD=12345
       - POSTGRES_USER=postgres
       - POSTGRES_DB=to_do_app_tasks
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256

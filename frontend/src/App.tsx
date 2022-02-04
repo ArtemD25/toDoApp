@@ -17,18 +17,19 @@ export default function App() {
   const isLoaderShown = useSelector((state: rootState) => state.isLoaderShown);
 
   return (
-    <div className="application">
+    <main className="application">
       <header className="header">
         <Header/>
       </header>
       <nav className="navbar">
         <Navbar/>
       </nav>
-      <main className="main">
+      <article className="main">
+        <h2 className="visually-hidden">All tasks user created</h2>
         <Main/>
-      </main>
+      </article>
       {isModalWindowShown && <ModalWindow/>}
       {isLoaderShown && <Loader />}
-    </div>
+    </main>
   )
 };

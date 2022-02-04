@@ -15,11 +15,11 @@ app.use(cors({
 }));
 app.use('/tasks', tasksRouter);
 
-tasksRouter.get('/:query', async (req, res) => {
+tasksRouter.get('/:queriedTasks', async (req, res, next) => {
   try {
-    const userQuery = req.params.query;
+    const queriedTasks = req.params.queriedTasks;
     let result;
-    switch(userQuery) {
+    switch(queriedTasks) {
       case 'all':
         result = await knex
           .select('*')
@@ -47,13 +47,11 @@ tasksRouter.get('/:query', async (req, res) => {
       tasks: result
     });
   } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
+    next();
   }
 });
 
-tasksRouter.patch('/:id', async (req, res) => {
+tasksRouter.patch('/:id', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).json({
@@ -77,13 +75,11 @@ tasksRouter.patch('/:id', async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
+    next();
   }
 })
 
-tasksRouter.put('/newTask', async (req, res) => {
+tasksRouter.put('/newTask', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')
       || req.body.text.length < MIN_TEXT_LENGTH
@@ -101,11 +97,11 @@ tasksRouter.put('/newTask', async (req, res) => {
       res.status(400).send(DATA_NOT_CORRECT_MSG);
     }
   } catch (error) {
-    res.status(500).send(error.message);
+    next();
   }
 })
 
-tasksRouter.delete('/:id', async (req, res) => {
+tasksRouter.delete('/:id', async (req, res, next) => {
   try {
     if (!Object.prototype.toString.call(req.body).includes('Object')) {
       return res.status(400).send(DATA_NOT_CORRECT_MSG);
@@ -122,19 +118,19 @@ tasksRouter.delete('/:id', async (req, res) => {
       res.status(400).send(DATA_NOT_CORRECT_MSG);
     }
   } catch (error) {
-    res.status(500).send(error.message);
+    next();
   }
-});
-
-app.listen(PORT, () => {
-  console.log(getTimeMessageString(new Date()));
 });
 
 app.use((error, req, res, next) => {
   res.status(500).json({
-    error: error.message
+    error: 'Internal server error'
   })
 })
+
+app.listen(PORT, () => {
+  console.log(getTimeMessageString(new Date()));
+});
 
 function getTimeMessageString(date: Date): string {
   const twoDigitsTime = [date.getHours(), date.getMinutes(), date.getSeconds()].map(time => {

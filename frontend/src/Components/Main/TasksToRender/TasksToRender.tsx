@@ -59,11 +59,11 @@ export default function TasksToRender(props: Props) {
   }
 
   return (
-    <div>
+    <React.Fragment>
       {props.isAddNewTaskButtonVisible && <ItemNew/>}
       {(filteredTasksToShow && filteredTasksToShow.length) > 0 ? filteredTasksToShow.map(task => <ItemTask
         key={task.id}
         task={task}/>) : <NoItems/>}
-      </div>
+    </React.Fragment>
   )
 }
